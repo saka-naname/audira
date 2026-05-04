@@ -2,6 +2,7 @@ use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
 };
+use tauri_plugin_sql::{Migration, MigrationKind};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -30,7 +31,19 @@ fn dump_metadata(path: &str) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let migrations = vec![Migration {
+        version: 1,
+        description: "create_initial_tables",
+        sql: include_str!("../migrations/0001_initial.sql"),
+        kind: MigrationKind::Up,
+    }];
+
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:libdata.db", migrations)
+                .build(),
+        )
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
