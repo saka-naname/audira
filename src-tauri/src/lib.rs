@@ -1,8 +1,12 @@
+mod commands;
+mod constants;
+
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
 };
 use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri_plugin_store::StoreExt;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -39,6 +43,12 @@ pub fn run() {
     }];
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .setup(|app| {
+            let store = app.store("config.json")?;
+            store.close_resource();
+            Ok(())
+        })
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:libdata.db", migrations)
@@ -47,7 +57,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![dump_metadata])
+        .invoke_handler(tauri::generate_handler![
+            dump_metadata,
+            commands::library::scan_library
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

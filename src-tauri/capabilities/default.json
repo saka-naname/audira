@@ -11,6 +11,10 @@
     "fs:default",
     "dialog:default",
     "sql:default",
-    "sql:allow-execute"
+    "sql:allow-execute",
+    {
+      "identifier": "store:default",
+      "allow": [{ "path": "config.json" }]
+    }
   ]
 }
