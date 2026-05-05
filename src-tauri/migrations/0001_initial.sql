@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS songs (
 CREATE TABLE IF NOT EXISTS song_metadata (
     id             TEXT NOT NULL PRIMARY KEY,
     song_id        TEXT NOT NULL UNIQUE REFERENCES songs (id) ON DELETE CASCADE,
-    recording_date DATE,
+    recording_date TEXT,
     genre          TEXT,
     composer       TEXT,
     audio_bitrate  INTEGER,

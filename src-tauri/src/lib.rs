@@ -1,6 +1,6 @@
 mod commands;
 mod constants;
-mod schema;
+mod models;
 
 use std::str::FromStr;
 
