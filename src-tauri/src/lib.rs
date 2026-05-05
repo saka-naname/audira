@@ -2,10 +2,13 @@ mod commands;
 mod constants;
 mod schema;
 
+use std::str::FromStr;
+
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
 };
+use sqlx::sqlite::SqliteConnectOptions;
 use tauri::{async_runtime, Manager};
 use tauri_plugin_store::StoreExt;
 
@@ -42,8 +45,14 @@ pub fn run() {
             // Initialize database
             let db_path = app.path().app_local_data_dir()?;
             let db_path = db_path.join("libdata.db").to_string_lossy().to_string();
+
+            let opts = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
+                .create_if_missing(true);
+
             let pool = async_runtime::block_on(async {
-                let pool = sqlx::SqlitePool::connect(&format!("sqlite:{}", db_path)).await?;
+                let pool = sqlx::sqlite::SqlitePoolOptions::new()
+                    .connect_with(opts)
+                    .await?;
                 sqlx::migrate!("./migrations").run(&pool).await?;
                 Ok::<_, sqlx::Error>(pool)
             })?;

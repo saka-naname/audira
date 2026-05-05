@@ -1,7 +1,8 @@
 -- thumbnails
 CREATE TABLE IF NOT EXISTS thumbnails (
     id   TEXT NOT NULL PRIMARY KEY,
-    filepath TEXT NOT NULL
+    filepath TEXT NOT NULL,
+    original_hash TEXT NOT NULL
 );
 
 -- songs
