@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS songs (
     album_artist_sort_order TEXT,
     track_title_sort_order  TEXT,
     track_artist_sort_order TEXT,
-    updated_at              DATETIME,
+    updated_at              TEXT,
     thumbnail_id            TEXT REFERENCES thumbnails (id) ON DELETE SET NULL
 );
 

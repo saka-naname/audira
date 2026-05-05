@@ -1,11 +1,12 @@
 mod commands;
 mod constants;
+mod schema;
 
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
 };
-use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri::{async_runtime, Manager};
 use tauri_plugin_store::StoreExt;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -35,25 +36,24 @@ fn dump_metadata(path: &str) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let migrations = vec![Migration {
-        version: 1,
-        description: "create_initial_tables",
-        sql: include_str!("../migrations/0001_initial.sql"),
-        kind: MigrationKind::Up,
-    }];
-
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
+            // Initialize database
+            let db_path = app.path().app_local_data_dir()?;
+            let db_path = db_path.join("libdata.db").to_string_lossy().to_string();
+            let pool = async_runtime::block_on(async {
+                let pool = sqlx::SqlitePool::connect(&format!("sqlite:{}", db_path)).await?;
+                sqlx::migrate!("./migrations").run(&pool).await?;
+                Ok::<_, sqlx::Error>(pool)
+            })?;
+            app.manage(pool);
+
+            // Initialize config store
             let store = app.store("config.json")?;
             store.close_resource();
             Ok(())
         })
-        .plugin(
-            tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:libdata.db", migrations)
-                .build(),
-        )
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())

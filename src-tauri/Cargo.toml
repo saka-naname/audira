@@ -25,7 +25,7 @@ serde_json = "1"
 lofty = "0.24.0"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
-tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-store = "2"
 walkdir = "2.5.0"
-
+sqlx = { version = "0.8.6", features = ["sqlite", "runtime-tokio", "macros"] }
+tokio = { version = "1.52.2", features = ["full"] }
