@@ -10,12 +10,12 @@ function Home() {
 	const handleClick = async () => {
 		const file = await open({
 			multiple: false,
-			directory: false,
+			directory: true,
 		});
 
 		if (!file) return;
 
-		await invoke("dump_metadata", { path: file });
+		await invoke("scan_library", { baseDir: file });
 	};
 
 	return (

@@ -28,9 +28,12 @@ pub async fn scan_library<R: Runtime>(
     }
 
     let files = walk_audio_files(base_path);
+    let mut count = 0;
     for file in files {
         // do something
+        count += 1;
     }
+    println!("{} files found", count);
 
     Ok(())
 }
