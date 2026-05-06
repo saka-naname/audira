@@ -2,16 +2,21 @@
 
 #![allow(unused_attributes)]
 
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx_gen::SqlxGen;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow, SqlxGen)]
 #[sqlx_gen(kind = "table", schema = "main", table = "thumbnails")]
 pub struct Thumbnails {
-    #[sqlx_gen(primary_key, sql_type = "TEXT")]
-    pub id: String,
+    #[sqlx_gen(primary_key, sql_type = "INTEGER")]
+    pub id: i64,
     #[sqlx_gen(sql_type = "TEXT")]
     pub filepath: String,
     #[sqlx_gen(sql_type = "TEXT")]
     pub original_hash: String,
+    #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
+    pub created_at: NaiveDateTime,
+    #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
+    pub updated_at: NaiveDateTime,
 }

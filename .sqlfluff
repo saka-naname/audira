@@ -1,0 +1,18 @@
+[sqlfluff]
+dialect = sqlite
+exclude_rules = layout.long_lines
+
+[sqlfluff:layout:type:column_definition]
+spacing_before = align
+align_scope = file
+align_within = statement
+
+[sqlfluff:layout:type:data_type_identifier]
+spacing_before = align
+align_scope = file
+align_within = statement
+
+[sqlfluff:layout:type:column_constraint_segment]
+spacing_before = align
+align_scope = file
+align_within = statement

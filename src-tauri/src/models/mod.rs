@@ -4,5 +4,6 @@
 
 pub mod album_songs;
 pub mod albums;
+pub mod song_metadata;
 pub mod songs;
 pub mod thumbnails;

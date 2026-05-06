@@ -30,3 +30,6 @@ walkdir = "2.5.0"
 sqlx = { version = "0.8.6", features = ["sqlite", "runtime-tokio", "macros"] }
 tokio = { version = "1.52.2", features = ["full"] }
 sqlx-gen = "0.5.5"
+blake3 = { version = "1.8.5", features = ["rayon"] }
+rayon = "1.12.0"
+chrono = { version = "0.4.44", features = ["serde"] }

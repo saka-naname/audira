@@ -2,14 +2,19 @@
 
 #![allow(unused_attributes)]
 
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx_gen::SqlxGen;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow, SqlxGen)]
 #[sqlx_gen(kind = "table", schema = "main", table = "album_songs")]
 pub struct AlbumSongs {
-    #[sqlx_gen(primary_key, sql_type = "TEXT")]
-    pub album_id: String,
-    #[sqlx_gen(primary_key, sql_type = "TEXT")]
-    pub song_id: String,
+    #[sqlx_gen(primary_key, sql_type = "INTEGER")]
+    pub album_id: i64,
+    #[sqlx_gen(primary_key, sql_type = "INTEGER")]
+    pub song_id: i64,
+    #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
+    pub created_at: NaiveDateTime,
+    #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
+    pub updated_at: NaiveDateTime,
 }
