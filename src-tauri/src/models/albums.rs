@@ -12,7 +12,7 @@ pub struct Albums {
     #[sqlx_gen(primary_key, sql_type = "INTEGER")]
     pub id: i64,
     #[sqlx_gen(sql_type = "TEXT")]
-    pub album_artist: String,
+    pub album_artist: Option<String>,
     #[sqlx_gen(sql_type = "TEXT")]
     pub album_title: String,
     #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]

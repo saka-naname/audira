@@ -5,11 +5,15 @@ use std::path::Path;
 use blake3::Hasher;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::ItemKey;
-use sqlx::SqlitePool;
+use sqlx::{SqliteConnection, SqlitePool};
 use tauri::Runtime;
 use walkdir::WalkDir;
 
 use crate::constants::AUDIO_EXTENSIONS;
+use crate::models::songs::Songs;
+use crate::repository::albums_repository::{
+    connect_album_and_song, find_album_by_title_and_artist, insert_album, InsertAlbumsParams,
+};
 use crate::repository::songs_repository::{self, is_exist_by_hash};
 
 #[tauri::command]
@@ -19,12 +23,6 @@ pub async fn scan_library<R: Runtime>(
     pool: tauri::State<'_, SqlitePool>,
     base_dir: &str,
 ) -> Result<(), String> {
-    // let store = app.store(CONFIG_STORE_PATH).map_err(|e| e.to_string())?;
-
-    // if !store.has("library.basePath") {
-    //     return Err(String::from("Library is not set"));
-    // };
-
     let start = std::time::Instant::now();
 
     let base_path = Path::new(base_dir);
@@ -118,13 +116,18 @@ pub async fn scan_library<R: Runtime>(
             duration_ms: props.duration().as_millis().try_into().ok(),
         };
 
-        if let Err(_) =
+        let Ok((song, _)) =
             songs_repository::insert_with_metadata(&mut *tx, &song, &song_metadata).await
-        {
+        else {
             tx.rollback().await.expect("Transaction rollback error.");
             return Err(String::from(
                 "トランザクションの書き込み中に問題が発生しました",
             ));
+        };
+
+        // アルバムを関連付け（なければ作成）
+        if let Err(e) = create_or_connect_album(&mut *tx, song).await {
+            return Err(e);
         }
 
         count += 1;
@@ -183,4 +186,52 @@ fn hash_files(
     });
 
     tasks
+}
+
+async fn create_or_connect_album(conn: &mut SqliteConnection, song: Songs) -> Result<(), String> {
+    let song_id = &song.id;
+    let album_title = song.album_title.as_deref();
+    let album_artist = song.album_artist.as_deref();
+
+    // Album must have album_title
+    let Some(album_title) = album_title else {
+        return Ok(());
+    };
+
+    println!("find_album_by_title_and_artist");
+    let album = find_album_by_title_and_artist(conn, &album_title, album_artist.as_deref()).await;
+
+    let Ok(album) = album else {
+        return Err(String::from("アルバムの検索に失敗しました"));
+    };
+
+    if let Some(album) = album {
+        // Connect with existing album
+        println!("connect_album_and_song");
+
+        if let Err(_) = connect_album_and_song(&mut *conn, &album.id, song_id).await {
+            return Err(String::from("アルバムへの登録に失敗しました"));
+        }
+    } else {
+        // Create new album
+        let params = InsertAlbumsParams {
+            album_title: String::from(album_title),
+            album_artist: match album_artist {
+                Some(aa) => Some(String::from(aa)),
+                None => None,
+            },
+        };
+        println!("insert_album");
+
+        let Ok(album) = insert_album(&mut *conn, &params).await else {
+            return Err(String::from("アルバムの作成に失敗しました"));
+        };
+        println!("connect_album_and_song");
+
+        if let Err(_) = connect_album_and_song(&mut *conn, &album.id, song_id).await {
+            return Err(String::from("アルバムへの登録に失敗しました"));
+        }
+    }
+
+    Ok(())
 }

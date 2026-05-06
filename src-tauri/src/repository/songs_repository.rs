@@ -1,4 +1,4 @@
-use sqlx::{sqlite, SqliteConnection};
+use sqlx::SqliteConnection;
 
 use crate::models::{song_metadata::SongMetadata, songs::Songs};
 

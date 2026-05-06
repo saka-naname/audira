@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS song_metadata (
 -- albums
 CREATE TABLE IF NOT EXISTS albums (
     id           INTEGER  NOT NULL PRIMARY KEY,
-    album_artist TEXT     NOT NULL,
+    album_artist TEXT,
     album_title  TEXT     NOT NULL,
     created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
