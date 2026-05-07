@@ -1,12 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
 	component: Home,
 });
 
 function Home() {
+	const navigate = useNavigate({ from: "/" });
+
 	const handleClick = async () => {
 		const file = await open({
 			multiple: false,
@@ -18,9 +21,9 @@ function Home() {
 		await invoke("scan_library", { baseDir: file });
 	};
 
-	return (
-		<h1 className="text-4xl">
-			Hello Tauri + Tanstack!
-		</h1>
-	);
+	useEffect(() => {
+		navigate({ to: "/library/" });
+	});
+
+	return null;
 }
