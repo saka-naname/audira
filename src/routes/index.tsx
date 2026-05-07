@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
 	component: Home,
@@ -21,7 +22,9 @@ function Home() {
 	return (
 		<h1 className="text-4xl">
 			Hello Tauri + Tanstack!
-			<button type="button" onClick={handleClick}>あ</button>
+			<Button variant="outline" onClick={handleClick}>
+				あ
+			</Button>
 		</h1>
 	);
 }
