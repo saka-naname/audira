@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**/*.{ts,tsx}", "!**/routeTree.gen.ts", "!**/vite-env.d.ts"]
+    "includes": [
+      "**/*.{ts,tsx}",
+      "!**/routeTree.gen.ts",
+      "!**/vite-env.d.ts",
+      "!src/components/ui"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -25,6 +30,12 @@
           "options": {
             "functions": ["twMerge", "twJoin", "cn"]
           }
+        }
+      },
+      "correctness": {
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error"
         }
       }
     }

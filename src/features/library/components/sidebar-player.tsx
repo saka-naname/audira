@@ -1,10 +1,5 @@
 import { IconMusic } from "@tabler/icons-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function SidebarPlayer() {
   return (
