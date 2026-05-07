@@ -12,7 +12,7 @@ use walkdir::WalkDir;
 use crate::constants::AUDIO_EXTENSIONS;
 use crate::models::songs::Songs;
 use crate::repository::albums_repository::{
-    connect_album_and_song, find_album_by_title_and_artist, insert_album, InsertAlbumsParams,
+    connect_album_and_song, find_album_by_params, insert_album, InsertAlbumsParams,
 };
 use crate::repository::songs_repository::{self, is_exist_by_hash};
 
@@ -192,6 +192,8 @@ async fn create_or_connect_album(conn: &mut SqliteConnection, song: Songs) -> Re
     let song_id = &song.id;
     let album_title = song.album_title.as_deref();
     let album_artist = song.album_artist.as_deref();
+    let album_title_sort_order = song.album_title_sort_order.as_deref();
+    let album_artist_sort_order = song.album_artist_sort_order.as_deref();
 
     // Album must have album_title
     let Some(album_title) = album_title else {
@@ -199,7 +201,14 @@ async fn create_or_connect_album(conn: &mut SqliteConnection, song: Songs) -> Re
     };
 
     println!("find_album_by_title_and_artist");
-    let album = find_album_by_title_and_artist(conn, &album_title, album_artist.as_deref()).await;
+    let album = find_album_by_params(
+        conn,
+        &album_title,
+        album_artist.as_deref(),
+        album_title_sort_order.as_deref(),
+        album_artist_sort_order.as_deref(),
+    )
+    .await;
 
     let Ok(album) = album else {
         return Err(String::from("アルバムの検索に失敗しました"));
@@ -217,7 +226,15 @@ async fn create_or_connect_album(conn: &mut SqliteConnection, song: Songs) -> Re
         let params = InsertAlbumsParams {
             album_title: String::from(album_title),
             album_artist: match album_artist {
-                Some(aa) => Some(String::from(aa)),
+                Some(s) => Some(String::from(s)),
+                None => None,
+            },
+            album_title_sort_order: match album_title_sort_order {
+                Some(s) => Some(String::from(s)),
+                None => None,
+            },
+            alubm_artist_sort_order: match album_artist_sort_order {
+                Some(s) => Some(String::from(s)),
                 None => None,
             },
         };

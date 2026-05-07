@@ -6,18 +6,30 @@ use crate::models::albums::Albums;
 pub struct InsertAlbumsParams {
     pub album_title: String,
     pub album_artist: Option<String>,
+    pub album_title_sort_order: Option<String>,
+    pub alubm_artist_sort_order: Option<String>,
 }
 
-pub async fn find_album_by_title_and_artist(
+pub async fn find_album_by_params(
     conn: &mut SqliteConnection,
     album_title: &str,
     album_artist: Option<&str>,
+    album_title_sort_order: Option<&str>,
+    album_artist_sort_order: Option<&str>,
 ) -> Result<Option<Albums>, sqlx::Error> {
     let result = sqlx::query_as::<_, Albums>(
-        "SELECT * FROM main.albums WHERE album_title = ? AND album_artist IS NOT DISTINCT FROM ? LIMIT 1",
+        r#"
+        SELECT * FROM main.albums WHERE album_title = ?
+                                    AND album_artist IS NOT DISTINCT FROM ?
+                                    AND album_title_sort_order IS NOT DISTINCT FROM ?
+                                    AND album_artist_sort_order IS NOT DISTINCT FROM ?
+                                    LIMIT 1
+                                    "#,
     )
     .bind(album_title)
     .bind(album_artist)
+    .bind(album_title_sort_order)
+    .bind(album_artist_sort_order)
     .fetch_optional(&mut *conn)
     .await;
 
@@ -48,10 +60,12 @@ pub async fn insert_album(
     params: &InsertAlbumsParams,
 ) -> Result<Albums, sqlx::Error> {
     let album = sqlx::query_as::<_, Albums>(
-        "INSERT INTO main.albums (album_title, album_artist) VALUES (?, ?) RETURNING *",
+        "INSERT INTO main.albums (album_title, album_artist, album_title_sort_order, album_artist_sort_order) VALUES (?, ?, ?, ?) RETURNING *",
     )
     .bind(&params.album_title)
     .bind(&params.album_artist)
+    .bind(&params.album_title_sort_order)
+    .bind(&params.alubm_artist_sort_order)
     .fetch_one(&mut *conn)
     .await;
 

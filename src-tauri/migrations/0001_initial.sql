@@ -48,11 +48,13 @@ CREATE TABLE IF NOT EXISTS song_metadata (
 
 -- albums
 CREATE TABLE IF NOT EXISTS albums (
-    id           INTEGER  NOT NULL PRIMARY KEY,
-    album_artist TEXT,
-    album_title  TEXT     NOT NULL,
-    created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id                      INTEGER  NOT NULL PRIMARY KEY,
+    album_artist            TEXT,
+    album_title             TEXT     NOT NULL,
+    album_title_sort_order  TEXT,
+    album_artist_sort_order TEXT,
+    created_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- album_songs (albums <-> songs の中間テーブル)

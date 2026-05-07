@@ -15,6 +15,10 @@ pub struct Albums {
     pub album_artist: Option<String>,
     #[sqlx_gen(sql_type = "TEXT")]
     pub album_title: String,
+    #[sqlx_gen(sql_type = "TEXT")]
+    pub album_title_sort_order: Option<String>,
+    #[sqlx_gen(sql_type = "TEXT")]
+    pub album_artist_sort_order: Option<String>,
     #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
     pub created_at: NaiveDateTime,
     #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
