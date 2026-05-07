@@ -9,22 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LibraryRouteRouteImport } from './routes/library/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LibraryIndexRouteImport } from './routes/library/index'
 
+const LibraryRouteRoute = LibraryRouteRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryIndexRoute = LibraryIndexRouteImport.update({
-  id: '/library/',
-  path: '/library/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => LibraryRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/library': typeof LibraryRouteRouteWithChildren
   '/library/': typeof LibraryIndexRoute
 }
 export interface FileRoutesByTo {
@@ -34,23 +41,31 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/library': typeof LibraryRouteRouteWithChildren
   '/library/': typeof LibraryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/library/'
+  fullPaths: '/' | '/library' | '/library/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/library'
-  id: '__root__' | '/' | '/library/'
+  id: '__root__' | '/' | '/library' | '/library/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LibraryIndexRoute: typeof LibraryIndexRoute
+  LibraryRouteRoute: typeof LibraryRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -60,17 +75,29 @@ declare module '@tanstack/react-router' {
     }
     '/library/': {
       id: '/library/'
-      path: '/library'
+      path: '/'
       fullPath: '/library/'
       preLoaderRoute: typeof LibraryIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof LibraryRouteRoute
     }
   }
 }
 
+interface LibraryRouteRouteChildren {
+  LibraryIndexRoute: typeof LibraryIndexRoute
+}
+
+const LibraryRouteRouteChildren: LibraryRouteRouteChildren = {
+  LibraryIndexRoute: LibraryIndexRoute,
+}
+
+const LibraryRouteRouteWithChildren = LibraryRouteRoute._addFileChildren(
+  LibraryRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LibraryIndexRoute: LibraryIndexRoute,
+  LibraryRouteRoute: LibraryRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

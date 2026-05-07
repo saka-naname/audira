@@ -5,5 +5,5 @@ export const Route = createFileRoute("/library/")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/library/"!</div>;
+  return <div className="h-full w-full bg-accent">Hello "/library/"!</div>;
 }
