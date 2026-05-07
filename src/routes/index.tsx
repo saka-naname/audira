@@ -4,26 +4,26 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
-	component: Home,
+  component: Home,
 });
 
 function Home() {
-	const navigate = useNavigate({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
 
-	const handleClick = async () => {
-		const file = await open({
-			multiple: false,
-			directory: true,
-		});
+  const handleClick = async () => {
+    const file = await open({
+      multiple: false,
+      directory: true,
+    });
 
-		if (!file) return;
+    if (!file) return;
 
-		await invoke("scan_library", { baseDir: file });
-	};
+    await invoke("scan_library", { baseDir: file });
+  };
 
-	useEffect(() => {
-		navigate({ to: "/library/" });
-	});
+  useEffect(() => {
+    navigate({ to: "/library/" });
+  });
 
-	return null;
+  return null;
 }
