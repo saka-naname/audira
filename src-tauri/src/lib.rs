@@ -2,6 +2,7 @@ mod commands;
 mod constants;
 mod models;
 mod repository;
+mod services;
 
 use std::{str::FromStr, time::Duration};
 

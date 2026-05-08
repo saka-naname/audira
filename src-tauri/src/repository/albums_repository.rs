@@ -7,7 +7,7 @@ pub struct InsertAlbumsParams {
     pub album_title: String,
     pub album_artist: Option<String>,
     pub album_title_sort_order: Option<String>,
-    pub alubm_artist_sort_order: Option<String>,
+    pub album_artist_sort_order: Option<String>,
 }
 
 pub async fn find_album_by_params(
@@ -59,19 +59,13 @@ pub async fn insert_album(
     conn: &mut SqliteConnection,
     params: &InsertAlbumsParams,
 ) -> Result<Albums, sqlx::Error> {
-    let album = sqlx::query_as::<_, Albums>(
+    sqlx::query_as::<_, Albums>(
         "INSERT INTO main.albums (album_title, album_artist, album_title_sort_order, album_artist_sort_order) VALUES (?, ?, ?, ?) RETURNING *",
     )
     .bind(&params.album_title)
     .bind(&params.album_artist)
     .bind(&params.album_title_sort_order)
-    .bind(&params.alubm_artist_sort_order)
+    .bind(&params.album_artist_sort_order)
     .fetch_one(&mut *conn)
-    .await;
-
-    if let Err(e) = album {
-        panic!("{e}");
-    }
-
-    album
+    .await
 }
