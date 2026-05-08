@@ -186,7 +186,7 @@ impl LibraryService {
                 .get_string(ItemKey::AlbumTitleSortOrder)
                 .map(|s| s.to_string()),
             album_artist_sort_order: tag
-                .get_string(ItemKey::AlbumTitleSortOrder)
+                .get_string(ItemKey::AlbumArtistSortOrder)
                 .map(|s| s.to_string()),
             track_title_sort_order: tag
                 .get_string(ItemKey::TrackTitleSortOrder)
