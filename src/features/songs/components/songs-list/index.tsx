@@ -91,7 +91,7 @@ export default function SongsList({
               size="sm"
               variant="ghost"
             >
-              曲名
+              タイトル
             </Button>
             <Button
               aria-pressed={sort.sortBy === "artist"}
@@ -124,14 +124,14 @@ export default function SongsList({
         </div>
       </header>
 
-      <div className="grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs">
+      <div className="grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs overflow-hidden scroll-stable gap-4">
         <span />
-        <span className="ml-4">曲名</span>
+        <span>タイトル</span>
         <span>アーティスト</span>
         <span>アルバム</span>
       </div>
 
-      <div ref={parentRef} className="min-h-0 flex-1 overflow-auto">
+      <div ref={parentRef} className="min-h-0 flex-1 overflow-auto scroll-stable">
         {query.isLoading ? (
           <div className="space-y-2 px-6 py-4">
             {SKELETON_ROW_KEYS.map((key) => (

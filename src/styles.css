@@ -132,6 +132,12 @@
     }
 }
 
+@layer utilities {
+  .scroll-stable {
+    scrollbar-gutter: stable;
+  }
+}
+
 html, body {
   overscroll-behavior: none;
 }

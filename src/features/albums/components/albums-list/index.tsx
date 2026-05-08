@@ -4,7 +4,7 @@ import {
   IconSortDescending,
 } from "@tabler/icons-react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAlbumsInfiniteQuery } from "@/features/albums/hooks/use-albums-infinite-query";
@@ -125,14 +125,14 @@ export default function AlbumsList({
         </div>
       </header>
 
-      <div className="grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(88px,88px)] items-center border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs">
+      <div className="grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,0.5fr)] gap-4 items-center border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs scroll-stable overflow-hidden">
         <span />
-        <span className="ml-4">アルバム名</span>
+        <span>タイトル</span>
         <span>アーティスト</span>
-        <span className="text-right">曲数</span>
+        <span>曲数</span>
       </div>
 
-      <div ref={parentRef} className="min-h-0 flex-1 overflow-auto">
+      <div ref={parentRef} className="min-h-0 flex-1 overflow-auto scroll-stable">
         {query.isLoading ? (
           <div className="space-y-2 px-6 py-4">
             {SKELETON_ROW_KEYS.map((key) => (
