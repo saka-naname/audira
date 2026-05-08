@@ -1,9 +1,47 @@
+use chrono::NaiveDateTime;
 use sqlx::SqliteConnection;
 
 use crate::models::{song_metadata::SongMetadata, songs::Songs};
 
 #[derive(Debug, Clone, Default)]
 pub struct SongsRepository;
+
+#[derive(Debug, Clone, Copy)]
+pub enum SongsSortKey {
+    Title,
+    Artist,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum SongsSortDirection {
+    Asc,
+    Desc,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ListSongsParams {
+    pub offset: i64,
+    pub page_size: i64,
+    pub sort_key: SongsSortKey,
+    pub sort_direction: SongsSortDirection,
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ListSongRow {
+    pub id: i64,
+    pub filepath: String,
+    pub track_title: Option<String>,
+    pub track_artist: Option<String>,
+    pub track_lyricist: Option<String>,
+    pub album_artist: Option<String>,
+    pub album_title: Option<String>,
+    pub disc_number: Option<i64>,
+    pub track_number: Option<i64>,
+    pub track_total: Option<i64>,
+    pub disc_total: Option<i64>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct InsertSongsParams {
@@ -111,5 +149,53 @@ impl SongsRepository {
             Ok(None) => Ok(false),
             Err(err) => Err(err),
         }
+    }
+
+    pub async fn list_songs(
+        &self,
+        pool: &sqlx::SqlitePool,
+        params: &ListSongsParams,
+    ) -> Result<Vec<ListSongRow>, sqlx::Error> {
+        let order_expression = match params.sort_key {
+            SongsSortKey::Title => {
+                "COALESCE(NULLIF(TRIM(s.track_title_sort_order), ''), NULLIF(TRIM(s.track_title), ''), s.filepath)"
+            }
+            SongsSortKey::Artist => {
+                "COALESCE(NULLIF(TRIM(s.track_artist_sort_order), ''), NULLIF(TRIM(s.track_artist), ''), s.filepath)"
+            }
+        };
+        let order_direction = match params.sort_direction {
+            SongsSortDirection::Asc => "ASC",
+            SongsSortDirection::Desc => "DESC",
+        };
+        let query = format!(
+            r#"
+            SELECT
+                s.id,
+                s.filepath,
+                s.track_title,
+                s.track_artist,
+                s.track_lyricist,
+                s.album_artist,
+                s.album_title,
+                s.disc_number,
+                s.track_number,
+                s.track_total,
+                s.disc_total,
+                s.created_at,
+                s.updated_at
+            FROM main.songs AS s
+            ORDER BY
+                LOWER({order_expression}) {order_direction},
+                s.id {order_direction}
+            LIMIT ? OFFSET ?
+            "#,
+        );
+
+        sqlx::query_as::<_, ListSongRow>(&query)
+            .bind(params.page_size)
+            .bind(params.offset)
+            .fetch_all(pool)
+            .await
     }
 }

@@ -11,7 +11,7 @@ function LibraryLayoutComponent() {
     <SidebarProvider>
       <LibrarySidebar />
 
-      <main className="grow">
+      <main className="min-w-0 grow">
         <Outlet />
       </main>
     </SidebarProvider>
