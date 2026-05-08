@@ -7,41 +7,42 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSongsInfiniteQuery } from "@/features/songs/hooks/use-songs-infinite-query";
+import { useAlbumsInfiniteQuery } from "@/features/albums/hooks/use-albums-infinite-query";
 import type {
-  ListSongsResponse,
-  SongListItem,
-  SongSort,
-} from "@/features/songs/types";
+  AlbumListItem,
+  AlbumSort,
+  ListAlbumsResponse,
+} from "@/features/albums/types";
 import { cn } from "@/lib/utils";
-import SongListItemRow from "./song-list-item";
+import AlbumListItemRow from "./album-list-item";
 
 const SKELETON_ROW_KEYS = Array.from(
   { length: 12 },
-  (_, index) => `song-skeleton-${index}`,
+  (_, index) => `album-skeleton-${index}`,
 );
 
-type SongsListProps = Readonly<{
-  sort: SongSort;
-  onSortByChange: (sortBy: SongSort["sortBy"]) => void;
+type AlbumsListProps = Readonly<{
+  sort: AlbumSort;
+  onSortByChange: (sortBy: AlbumSort["sortBy"]) => void;
   onSortOrderToggle: () => void;
 }>;
 
-export default function SongsList({
+export default function AlbumsList({
   sort,
   onSortByChange,
   onSortOrderToggle,
-}: SongsListProps) {
-  const query = useSongsInfiniteQuery(sort);
-  const songs = useMemo<SongListItem[]>(
+}: AlbumsListProps) {
+  const query = useAlbumsInfiniteQuery(sort);
+  const albums = useMemo<AlbumListItem[]>(
     () =>
-      query.data?.pages.flatMap((page: ListSongsResponse) => page.songs) ?? [],
+      query.data?.pages.flatMap((page: ListAlbumsResponse) => page.albums) ??
+      [],
     [query.data],
   );
 
   const parentRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
-    count: query.hasNextPage ? songs.length + 1 : songs.length,
+    count: query.hasNextPage ? albums.length + 1 : albums.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 64,
     overscan: 10,
@@ -53,17 +54,17 @@ export default function SongsList({
 
     if (
       lastItem &&
-      lastItem.index >= songs.length - 1 &&
+      lastItem.index >= albums.length - 1 &&
       query.hasNextPage &&
       !query.isFetchingNextPage
     ) {
       query.fetchNextPage();
     }
   }, [
+    albums.length,
     query.fetchNextPage,
     query.hasNextPage,
     query.isFetchingNextPage,
-    songs.length,
     virtualItems,
   ]);
 
@@ -72,10 +73,10 @@ export default function SongsList({
       <header className="flex h-24 shrink-0 items-center justify-between gap-4 border-b bg-background px-6">
         <div className="min-w-0">
           <h1 className="truncate font-semibold text-2xl tracking-normal">
-            曲
+            アルバム
           </h1>
           <p className="mt-1 text-muted-foreground text-sm">
-            {songs.length.toLocaleString()} 曲を表示中
+            {albums.length.toLocaleString()} 枚を表示中
           </p>
         </div>
 
@@ -91,7 +92,7 @@ export default function SongsList({
               size="sm"
               variant="ghost"
             >
-              タイトル
+              アルバム名
             </Button>
             <Button
               aria-pressed={sort.sortBy === "artist"}
@@ -124,11 +125,11 @@ export default function SongsList({
         </div>
       </header>
 
-      <div className="scroll-stable grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 overflow-hidden border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs">
+      <div className="scroll-stable grid h-10 shrink-0 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,0.5fr)] items-center gap-4 overflow-hidden border-b bg-muted/30 px-4 font-medium text-muted-foreground text-xs">
         <span />
         <span>タイトル</span>
         <span>アーティスト</span>
-        <span>アルバム</span>
+        <span>曲数</span>
       </div>
 
       <div
@@ -143,11 +144,11 @@ export default function SongsList({
           </div>
         ) : query.isError ? (
           <div className="flex h-full items-center justify-center px-6 text-muted-foreground text-sm">
-            曲の読み込みに失敗しました。
+            アルバムの読み込みに失敗しました。
           </div>
-        ) : songs.length === 0 ? (
+        ) : albums.length === 0 ? (
           <div className="flex h-full items-center justify-center px-6 text-muted-foreground text-sm">
-            表示できる曲がありません。
+            表示できるアルバムがありません。
           </div>
         ) : (
           <div
@@ -155,7 +156,7 @@ export default function SongsList({
             style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
           >
             {virtualItems.map((virtualItem) => {
-              const song = songs[virtualItem.index];
+              const album = albums[virtualItem.index];
 
               return (
                 <div
@@ -167,8 +168,8 @@ export default function SongsList({
                     transform: `translateY(${virtualItem.start}px)`,
                   }}
                 >
-                  {song ? (
-                    <SongListItemRow song={song} />
+                  {album ? (
+                    <AlbumListItemRow album={album} />
                   ) : (
                     <div className="flex h-14 items-center justify-center px-4 text-muted-foreground text-sm">
                       <IconArrowsSort className="mr-2 size-4 animate-pulse" />

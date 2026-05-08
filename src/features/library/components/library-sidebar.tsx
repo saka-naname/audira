@@ -42,7 +42,7 @@ export default function LibrarySidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   render={
-                    <Link to={"/library/"}>
+                    <Link to={"/library/albums"}>
                       <IconDisc />
                       アルバム
                     </Link>

@@ -14,7 +14,9 @@ use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode};
 use tauri::{async_runtime, Manager};
 use tauri_plugin_store::StoreExt;
 
-use crate::services::{library_service::LibraryService, songs_service::SongsService};
+use crate::services::{
+    albums_service::AlbumsService, library_service::LibraryService, songs_service::SongsService,
+};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -65,7 +67,8 @@ pub fn run() {
                 Ok::<_, sqlx::Error>(pool)
             })?;
             app.manage(LibraryService::new(pool.clone()));
-            app.manage(SongsService::new(pool));
+            app.manage(SongsService::new(pool.clone()));
+            app.manage(AlbumsService::new(pool));
 
             // Initialize config store
             let store = app.store("config.json")?;
@@ -77,6 +80,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             dump_metadata,
+            commands::albums::list_albums,
             commands::library::scan_library,
             commands::songs::list_songs
         ])
