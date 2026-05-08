@@ -47,8 +47,9 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
             // Initialize database
-            let db_path = app.path().app_local_data_dir()?;
-            let db_path = db_path.join("libdata.db").to_string_lossy().to_string();
+            let db_dir = app.path().app_local_data_dir()?;
+            std::fs::create_dir_all(&db_dir)?;
+            let db_path = db_dir.join("libdata.db").to_string_lossy().to_string();
 
             let opts = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
                 .create_if_missing(true)
