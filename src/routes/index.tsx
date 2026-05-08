@@ -1,9 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
-	component: Home,
+  component: Home,
 });
 
 function Home() {
-	return <h1 className="text-4xl">Hello Tauri + Tanstack!</h1>;
+  const navigate = useNavigate({ from: "/" });
+
+  useEffect(() => {
+    navigate({ to: "/library/" });
+  });
+
+  return null;
 }

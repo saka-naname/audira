@@ -1,0 +1,29 @@
+{
+    "editor.indentSize": "tabSize",
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.biome": "explicit",
+        "source.organizeImports.biome": "explicit",
+    },
+    "sqlfluff.dialect": "sqlite",
+    "sqlfluff.linter.run": "onType",
+    "sqlfluff.suppressNotifications": true,
+    "sqlfluff.format.languages": [
+        "sql",
+        "sql-bigquery",
+        "jinja-sql",
+        "postgres",
+        "snowflake-sql"
+    ],
+    "sqlfluff.config": "${workspaceFolder}/.sqlfluff",
+    "[sql]": {
+        "editor.defaultFormatter": "sqlfluff.vscode-sqlfluff"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    }
+}
