@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LibraryRouteRouteImport } from './routes/library/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LibraryIndexRouteImport } from './routes/library/index'
+import { Route as LibraryAlbumsRouteImport } from './routes/library/albums'
 
 const LibraryRouteRoute = LibraryRouteRouteImport.update({
   id: '/library',
@@ -28,28 +29,36 @@ const LibraryIndexRoute = LibraryIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LibraryRouteRoute,
 } as any)
+const LibraryAlbumsRoute = LibraryAlbumsRouteImport.update({
+  id: '/albums',
+  path: '/albums',
+  getParentRoute: () => LibraryRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/library': typeof LibraryRouteRouteWithChildren
+  '/library/albums': typeof LibraryAlbumsRoute
   '/library/': typeof LibraryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/library/albums': typeof LibraryAlbumsRoute
   '/library': typeof LibraryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/library': typeof LibraryRouteRouteWithChildren
+  '/library/albums': typeof LibraryAlbumsRoute
   '/library/': typeof LibraryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/library' | '/library/'
+  fullPaths: '/' | '/library' | '/library/albums' | '/library/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/library'
-  id: '__root__' | '/' | '/library' | '/library/'
+  to: '/' | '/library/albums' | '/library'
+  id: '__root__' | '/' | '/library' | '/library/albums' | '/library/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -80,14 +89,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibraryIndexRouteImport
       parentRoute: typeof LibraryRouteRoute
     }
+    '/library/albums': {
+      id: '/library/albums'
+      path: '/albums'
+      fullPath: '/library/albums'
+      preLoaderRoute: typeof LibraryAlbumsRouteImport
+      parentRoute: typeof LibraryRouteRoute
+    }
   }
 }
 
 interface LibraryRouteRouteChildren {
+  LibraryAlbumsRoute: typeof LibraryAlbumsRoute
   LibraryIndexRoute: typeof LibraryIndexRoute
 }
 
 const LibraryRouteRouteChildren: LibraryRouteRouteChildren = {
+  LibraryAlbumsRoute: LibraryAlbumsRoute,
   LibraryIndexRoute: LibraryIndexRoute,
 }
 
