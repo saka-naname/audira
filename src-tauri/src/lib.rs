@@ -14,6 +14,8 @@ use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode};
 use tauri::{async_runtime, Manager};
 use tauri_plugin_store::StoreExt;
 
+use crate::services::library_service::LibraryService;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn dump_metadata(path: &str) -> Result<(), String> {
@@ -61,7 +63,7 @@ pub fn run() {
                 sqlx::migrate!("./migrations").run(&pool).await?;
                 Ok::<_, sqlx::Error>(pool)
             })?;
-            app.manage(pool);
+            app.manage(LibraryService::new(pool));
 
             // Initialize config store
             let store = app.store("config.json")?;

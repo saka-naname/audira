@@ -1,16 +1,12 @@
-use sqlx::SqlitePool;
-use tauri::Runtime;
-
-use crate::services::library_service::{self, LibraryScanError};
+use crate::services::library_service::{LibraryScanError, LibraryService};
 
 #[tauri::command]
-pub async fn scan_library<R: Runtime>(
-    _app: tauri::AppHandle<R>,
-    _window: tauri::Window<R>,
-    pool: tauri::State<'_, SqlitePool>,
+pub async fn scan_library(
+    service: tauri::State<'_, LibraryService>,
     base_dir: &str,
 ) -> Result<(), String> {
-    library_service::scan_library(&pool, base_dir)
+    service
+        .scan_library(base_dir)
         .await
         .map_err(scan_error_message)
 }
