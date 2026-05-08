@@ -122,11 +122,10 @@ export default function SongsList({
         </div>
 
         <div className="overflow-hidden rounded-xl border bg-card">
-          <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_6rem] gap-4 border-b bg-muted/40 px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+          <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 border-b bg-muted/40 px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">
             <span>曲名</span>
             <span>アーティスト</span>
             <span>アルバム</span>
-            <span className="text-right">時間</span>
           </div>
 
           {query.isLoading ? <SongsListSkeleton /> : null}
@@ -169,20 +168,17 @@ export default function SongsList({
 
 function SongRow({ song }: Readonly<{ song: SongListItem }>) {
   return (
-    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_6rem] gap-4 border-b px-4 py-3 last:border-b-0 hover:bg-muted/40">
+    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 border-b px-4 py-3 last:border-b-0 hover:bg-muted/40">
       <div className="min-w-0">
         <p className="truncate font-medium">
-          {song.title || filenameFromPath(song.filepath)}
+          {song.trackTitle || filenameFromPath(song.filepath)}
         </p>
         <p className="truncate text-muted-foreground text-xs">
           {song.filepath}
         </p>
       </div>
-      <CellText>{song.artist || "不明なアーティスト"}</CellText>
+      <CellText>{song.trackArtist || "不明なアーティスト"}</CellText>
       <CellText>{song.albumTitle || "不明なアルバム"}</CellText>
-      <span className="self-center text-right text-muted-foreground text-sm">
-        {formatDuration(song.durationMs)}
-      </span>
     </div>
   );
 }
@@ -195,7 +191,7 @@ function SongsListSkeleton() {
   return skeletonRows.map((rowId, index) => (
     <div
       className={cn(
-        "grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_6rem] gap-4 border-b px-4 py-3",
+        "grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 border-b px-4 py-3",
         index === 11 && "border-b-0",
       )}
       key={rowId}
@@ -206,20 +202,8 @@ function SongsListSkeleton() {
       </div>
       <Skeleton className="h-4 self-center" />
       <Skeleton className="h-4 self-center" />
-      <Skeleton className="h-4 w-12 self-center justify-self-end" />
     </div>
   ));
-}
-
-function formatDuration(durationMs: number | null) {
-  if (durationMs === null) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 function filenameFromPath(filepath: string) {

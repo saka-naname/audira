@@ -9,11 +9,18 @@ export type SongSort = {
 
 export type SongListItem = {
   id: number;
-  title: string | null;
-  artist: string | null;
-  albumTitle: string | null;
   filepath: string;
-  durationMs: number | null;
+  trackTitle: string | null;
+  trackArtist: string | null;
+  trackLyricist: string | null;
+  albumArtist: string | null;
+  albumTitle: string | null;
+  discNumber: number | null;
+  trackNumber: number | null;
+  trackTotal: number | null;
+  discTotal: number | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type ListSongsRequest = SongSort & {

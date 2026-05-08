@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 
@@ -53,11 +54,18 @@ pub struct ListSongsRequest {
 #[serde(rename_all = "camelCase")]
 pub struct SongListItemDto {
     pub id: i64,
-    pub title: Option<String>,
-    pub artist: Option<String>,
-    pub album_title: Option<String>,
     pub filepath: String,
-    pub duration_ms: Option<i64>,
+    pub track_title: Option<String>,
+    pub track_artist: Option<String>,
+    pub track_lyricist: Option<String>,
+    pub album_artist: Option<String>,
+    pub album_title: Option<String>,
+    pub disc_number: Option<i64>,
+    pub track_number: Option<i64>,
+    pub track_total: Option<i64>,
+    pub disc_total: Option<i64>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -116,11 +124,18 @@ impl SongsService {
             .take(page_size as usize)
             .map(|song| SongListItemDto {
                 id: song.id,
-                title: song.track_title,
-                artist: song.track_artist,
-                album_title: song.album_title,
                 filepath: song.filepath,
-                duration_ms: song.duration_ms,
+                track_title: song.track_title,
+                track_artist: song.track_artist,
+                track_lyricist: song.track_lyricist,
+                album_artist: song.album_artist,
+                album_title: song.album_title,
+                disc_number: song.disc_number,
+                track_number: song.track_number,
+                track_total: song.track_total,
+                disc_total: song.disc_total,
+                created_at: song.created_at,
+                updated_at: song.updated_at,
             })
             .collect::<Vec<_>>();
 

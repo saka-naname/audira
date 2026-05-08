@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use sqlx::SqliteConnection;
 
 use crate::models::{song_metadata::SongMetadata, songs::Songs};
@@ -31,8 +32,15 @@ pub struct ListSongRow {
     pub filepath: String,
     pub track_title: Option<String>,
     pub track_artist: Option<String>,
+    pub track_lyricist: Option<String>,
+    pub album_artist: Option<String>,
     pub album_title: Option<String>,
-    pub duration_ms: Option<i64>,
+    pub disc_number: Option<i64>,
+    pub track_number: Option<i64>,
+    pub track_total: Option<i64>,
+    pub disc_total: Option<i64>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -167,10 +175,16 @@ impl SongsRepository {
                 s.filepath,
                 s.track_title,
                 s.track_artist,
+                s.track_lyricist,
+                s.album_artist,
                 s.album_title,
-                m.duration_ms
+                s.disc_number,
+                s.track_number,
+                s.track_total,
+                s.disc_total,
+                s.created_at,
+                s.updated_at
             FROM main.songs AS s
-            LEFT JOIN main.song_metadata AS m ON m.song_id = s.id
             ORDER BY
                 LOWER({order_expression}) {order_direction},
                 s.id {order_direction}
