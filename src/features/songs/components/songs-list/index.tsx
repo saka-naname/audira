@@ -167,7 +167,7 @@ export default function SongsList({
                   {song ? (
                     <SongListItemRow song={song} />
                   ) : (
-                    <div className="flex h-14 items-center justify-center text-muted-foreground text-sm px-4">
+                    <div className="flex h-14 items-center justify-center px-4 text-muted-foreground text-sm">
                       <IconArrowsSort className="mr-2 size-4 animate-pulse" />
                       読み込み中
                     </div>

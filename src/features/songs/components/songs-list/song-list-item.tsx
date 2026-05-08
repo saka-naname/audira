@@ -6,24 +6,23 @@ type SongListItemRowProps = Readonly<{
 
 export default function SongListItemRow({ song }: SongListItemRowProps) {
   return (
-    <div className="hover:bg-accent/50 px-3">
-          <div className="grid h-14 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 border-b text-sm px-1">
-      <div className="min-w-0">
-        <div className="w-11 aspect-square bg-stone-200 rounded-md"></div>
-      </div>
-      <div className="min-w-0">
-        <p className="truncate font-medium">
-          {song.trackTitle ?? song.filepath}
+    <div className="px-3 hover:bg-accent/50">
+      <div className="grid h-14 grid-cols-[minmax(44px,44px)_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 border-b px-1 text-sm">
+        <div className="min-w-0">
+          <div className="aspect-square w-11 rounded-md bg-stone-200"></div>
+        </div>
+        <div className="min-w-0">
+          <p className="truncate font-medium">
+            {song.trackTitle ?? song.filepath}
+          </p>
+        </div>
+        <p className="truncate text-muted-foreground">
+          {song.trackArtist || "-"}
+        </p>
+        <p className="truncate text-muted-foreground">
+          {song.albumTitle || "-"}
         </p>
       </div>
-      <p className="truncate text-muted-foreground">
-        {song.trackArtist || "-"}
-      </p>
-      <p className="truncate text-muted-foreground">
-        {song.albumTitle || "-"}
-      </p>
     </div>
-    </div>
-
   );
 }
