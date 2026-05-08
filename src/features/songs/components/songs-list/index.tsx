@@ -5,7 +5,7 @@ import {
   IconSortAscendingLetters,
   IconUser,
 } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSongsInfiniteQuery } from "@/features/songs/hooks/use-songs-infinite-query";
@@ -26,11 +26,17 @@ const skeletonRows = Array.from(
   (_, index) => `song-skeleton-${index}`,
 );
 
-export default function SongsList() {
-  const [sort, setSort] = useState<SongSort>({
-    sortBy: "title",
-    sortOrder: "asc",
-  });
+type SongsListProps = Readonly<{
+  sort: SongSort;
+  onSortByChange: (sortBy: SongSort["sortBy"]) => void;
+  onSortOrderToggle: () => void;
+}>;
+
+export default function SongsList({
+  sort,
+  onSortByChange,
+  onSortOrderToggle,
+}: SongsListProps) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const query = useSongsInfiniteQuery(sort);
   const songs = useMemo<SongListItem[]>(
@@ -62,17 +68,6 @@ export default function SongsList() {
     return () => observer.disconnect();
   }, [query.fetchNextPage, query.hasNextPage, query.isFetchingNextPage]);
 
-  const changeSortBy = (sortBy: SongSort["sortBy"]) => {
-    setSort((current) => ({ ...current, sortBy }));
-  };
-
-  const toggleSortOrder = () => {
-    setSort((current) => ({
-      ...current,
-      sortOrder: current.sortOrder === "asc" ? "desc" : "asc",
-    }));
-  };
-
   return (
     <section className="flex h-full min-h-0 flex-col bg-background">
       <header className="border-b bg-background/95 px-8 py-6 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -96,7 +91,7 @@ export default function SongsList() {
             <Button
               type="button"
               variant={sort.sortBy === "title" ? "default" : "outline"}
-              onClick={() => changeSortBy("title")}
+              onClick={() => onSortByChange("title")}
             >
               <IconMusic />
               曲名
@@ -104,12 +99,12 @@ export default function SongsList() {
             <Button
               type="button"
               variant={sort.sortBy === "artist" ? "default" : "outline"}
-              onClick={() => changeSortBy("artist")}
+              onClick={() => onSortByChange("artist")}
             >
               <IconUser />
               アーティスト
             </Button>
-            <Button type="button" variant="outline" onClick={toggleSortOrder}>
+            <Button type="button" variant="outline" onClick={onSortOrderToggle}>
               {sort.sortOrder === "asc" ? <IconArrowUp /> : <IconArrowDown />}
               {sort.sortOrder === "asc" ? "昇順" : "降順"}
             </Button>
