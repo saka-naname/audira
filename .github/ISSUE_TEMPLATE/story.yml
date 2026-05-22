@@ -1,0 +1,91 @@
+name: User Story
+description: ユーザー価値単位の作業Issue。EpicのSub-issueとして作成する
+title: "[STORY] "
+labels: ["type: story"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        User Storyはユーザー価値単位の作業Issueです。
+        原則としてEpicのSub-issueとして作成してください。
+        Taskは個別Issueにせず、このStory内のチェックリストとして管理してください。
+
+  - type: input
+    id: parent-epic
+    attributes:
+      label: Parent Epic
+      description: 親EpicのIssue番号を書いてください。例）#12
+      placeholder: "#"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: ユーザー視点の価値として書いてください。
+      value: |
+        ユーザーとして、<やりたいこと>。
+        それによって、<得られる価値>。
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: 背景・補足・制約があれば書いてください。
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: 外から観測できる完了条件を書いてください。実装作業ではなく、ユーザー視点の振る舞いにしてください。
+      value: |
+        以下は例です。Storyに合わせて置き換えてください。
+
+        - [ ] ユーザーがライブラリ画面でローカル音源フォルダを選択できる
+        - [ ] スキャン完了後、検出した曲が一覧に表示される
+        - [ ] 対応外ファイルが含まれていても処理が中断せず、スキップ結果が確認できる
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      description: このStoryを完了するための実装作業を書いてください。Taskは原則として個別Issue化しません。
+      value: |
+        以下は例です。Storyに合わせて置き換えてください。
+
+        - [ ] Tauri command/API 呼び出しを実装する
+        - [ ] Story用の画面・コンポーネント・状態管理を実装する
+        - [ ] 正常系・異常系のテストまたは確認手順を追加する
+    validations:
+      required: true
+
+  - type: textarea
+    id: check
+    attributes:
+      label: Check
+      description: 実装後の確認観点を書いてください。
+      value: |
+        - [ ] 正常系を確認した
+        - [ ] 異常系を確認した
+        - [ ] UI表示を確認した
+        - [ ] 型チェックが通る
+        - [ ] lintが通る
+        - [ ] 必要なテストを追加・更新した
+        - [ ] 必要なドキュメントを更新した
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: 実装メモ、設計メモ、関連PR、関連ADRなどを書いてください。
+    validations:
+      required: false

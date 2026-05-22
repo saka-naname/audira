@@ -1,0 +1,83 @@
+name: Epic
+description: 大きな機能領域・開発テーマを管理する親Issue
+title: "[EPIC] "
+labels: ["type: epic"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Epicは大きな機能領域・開発テーマを管理する親Issueです。
+        User StoryはこのEpicのSub-issueとして作成してください。
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: このEpicで実現したいことを書いてください。
+      placeholder: 例）ローカル音源を選択し、再生・停止・一時停止・シークできるようにする。
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: なぜこのEpicが必要かを書いてください。
+      placeholder: 例）MVPとして、最小限の音源再生機能が必要なため。
+    validations:
+      required: false
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: このEpicに含める範囲を書いてください。
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of Scope
+      description: このEpicでは扱わない範囲を書いてください。
+      value: |
+        -
+        -
+    validations:
+      required: false
+
+  - type: textarea
+    id: related-stories
+    attributes:
+      label: Related Stories
+      description: User StoryはSub-issueとして追加してください。必要ならここにもリンクを記録してください。
+      value: |
+        Sub-issuesで管理する。
+    validations:
+      required: false
+
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: このEpicを完了とみなす条件を書いてください。
+      value: |
+        - [ ] 主要なUser Storyが完了している
+        - [ ] 主要な動作が手元で確認できている
+        - [ ] 必要なテストが追加・更新されている
+        - [ ] 必要なドキュメントが更新されている
+        - [ ] 関連ADRまたはarchitecture docsが更新されている
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: 設計メモ、関連ADR、参考情報などを書いてください。
+    validations:
+      required: false
