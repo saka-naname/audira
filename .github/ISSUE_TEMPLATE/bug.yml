@@ -1,0 +1,61 @@
+name: Bug
+description: 不具合を報告・管理するIssue
+title: "[BUG] "
+labels: ["type: bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: 不具合の概要を書いてください。
+      placeholder: 例）停止ボタンを押してもUI上の再生状態がplayingのまま残る。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: 再現手順を書いてください。
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: 期待される挙動を書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: 実際の挙動を書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS、アプリバージョン、実行環境などを書いてください。
+      value: |
+        - OS:
+        - App version:
+        - Runtime:
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: ログ、スクリーンショット、関連Issueなどがあれば書いてください。
+    validations:
+      required: false

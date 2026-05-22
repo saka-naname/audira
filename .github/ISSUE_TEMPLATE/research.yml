@@ -1,0 +1,53 @@
+name: Research / Spike
+description: 実装前の調査・検証を管理するIssue
+title: "[RESEARCH] "
+labels: ["type: research"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research Question
+      description: 調査したい問いを書いてください。
+      placeholder: 例）rodioで形式に依存しないseekをどこまで実現できるか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: なぜこの調査が必要かを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: investigation
+    attributes:
+      label: Investigation Plan
+      description: 何を確認するかを書いてください。
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Expected Output
+      description: 調査結果として何を残すかを書いてください。
+      value: |
+        - [ ] 結論をIssueコメントにまとめる
+        - [ ] 必要ならADRを作成する
+        - [ ] 後続StoryまたはTaskを作成する
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: 参考リンク、検証ログ、メモなどを書いてください。
+    validations:
+      required: false
