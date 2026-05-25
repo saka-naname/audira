@@ -1,3 +1,21 @@
 [tools]
 node = "24.15.0"
 rust = "1.95.0"
+
+[tasks.dev]
+run = "npm run tauri dev"
+
+[tasks."check:frontend"]
+alias = "lint:frontend"
+run = "npm run check"
+
+[tasks."check:backend"]
+alias = "lint:backend"
+run = "cargo check --manifest-path src-tauri/Cargo.toml"
+
+[tasks.check]
+alias = "lint"
+run = [{ tasks = ["check:frontend", "check:backend"] }]
+
+[tasks."test:backend"]
+run = "cargo test --manifest-path src-tauri/Cargo.toml"
