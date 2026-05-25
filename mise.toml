@@ -15,7 +15,13 @@ run = "cargo check --manifest-path src-tauri/Cargo.toml"
 
 [tasks.check]
 alias = "lint"
-run = [{ tasks = ["check:frontend", "check:backend"] }]
+run = [{ tasks = ["check:*"] }]
+
+[tasks."test:frontend"]
+run = "npm run test"
 
 [tasks."test:backend"]
 run = "cargo test --manifest-path src-tauri/Cargo.toml"
+
+[tasks.test]
+run = [{ tasks = ["test:*"] }]
