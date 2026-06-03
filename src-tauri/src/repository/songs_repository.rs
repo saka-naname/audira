@@ -1,10 +1,7 @@
 use chrono::NaiveDateTime;
 use sqlx::SqliteConnection;
 
-use crate::models::{
-    song_metadata::{self, SongMetadata},
-    songs::Songs,
-};
+use crate::models::{song_metadata::SongMetadata, songs::Songs};
 
 #[derive(Debug, Clone, Default)]
 pub struct SongsRepository;
