@@ -9,3 +9,11 @@ export async function listSongs(
 ): Promise<ListSongsResponse> {
   return invoke<ListSongsResponse>("list_songs", { request });
 }
+
+export async function playTrack(id: number) {
+  return invoke("play_track", { id });
+}
+
+export async function stopTrack() {
+  return invoke("stop_track");
+}
