@@ -19,6 +19,9 @@ export function PlayerEventBridge() {
       listen<Track>("player://track", (event) => {
         setCurrentTrack(event.payload);
       }),
+      listen("player://track-ended", (_event) => {
+        setCurrentTrack(null);
+      }),
     ];
 
     return () => {
