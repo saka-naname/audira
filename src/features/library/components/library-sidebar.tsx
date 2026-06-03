@@ -19,7 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import SidebarPlayer from "./sidebar-player";
+import SidebarPlayer from "@/features/player/components/sidebar-player";
 
 export default function LibrarySidebar() {
   return (
