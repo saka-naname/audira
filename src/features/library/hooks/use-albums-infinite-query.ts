@@ -1,6 +1,6 @@
 import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { listAlbums } from "@/features/albums/api/albums-api";
-import type { AlbumSort, ListAlbumsResponse } from "@/features/albums/types";
+import { listAlbums } from "@/features/library/api/albums-api";
+import type { AlbumSort, ListAlbumsResponse } from "@/features/library/types";
 
 const ALBUMS_PAGE_SIZE = 50;
 
