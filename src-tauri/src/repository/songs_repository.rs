@@ -1,7 +1,10 @@
 use chrono::NaiveDateTime;
 use sqlx::SqliteConnection;
 
-use crate::models::{song_metadata::SongMetadata, songs::Songs};
+use crate::models::{
+    song_metadata::{self, SongMetadata},
+    songs::Songs,
+};
 
 #[derive(Debug, Clone, Default)]
 pub struct SongsRepository;
@@ -149,6 +152,26 @@ impl SongsRepository {
             Ok(None) => Ok(false),
             Err(err) => Err(err),
         }
+    }
+
+    pub async fn select_with_metadata(
+        &self,
+        pool: &sqlx::SqlitePool,
+        id: &i64,
+    ) -> Result<(Songs, SongMetadata), sqlx::Error> {
+        let song = sqlx::query_as::<_, Songs>("SELECT * FROM main.songs WHERE id = ? LIMIT 1")
+            .bind(id)
+            .fetch_one(pool)
+            .await?;
+
+        let song_metadata = sqlx::query_as::<_, SongMetadata>(
+            "SELECT * FROM main.song_metadata WHERE song_id = ? LIMIT 1",
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await?;
+
+        Ok((song, song_metadata))
     }
 
     pub async fn list_songs(

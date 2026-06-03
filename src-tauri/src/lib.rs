@@ -15,7 +15,8 @@ use tauri::{async_runtime, Manager};
 use tauri_plugin_store::StoreExt;
 
 use crate::services::{
-    albums_service::AlbumsService, library_service::LibraryService, songs_service::SongsService,
+    albums_service::AlbumsService, library_service::LibraryService, player_service::PlayerService,
+    songs_service::SongsService,
 };
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -68,7 +69,8 @@ pub fn run() {
             })?;
             app.manage(LibraryService::new(pool.clone()));
             app.manage(SongsService::new(pool.clone()));
-            app.manage(AlbumsService::new(pool));
+            app.manage(AlbumsService::new(pool.clone()));
+            app.manage(PlayerService::new(pool));
 
             // Initialize config store
             let store = app.store("config.json")?;
@@ -82,6 +84,7 @@ pub fn run() {
             dump_metadata,
             commands::albums::list_albums,
             commands::library::scan_library,
+            commands::player::play_track,
             commands::songs::list_songs
         ])
         .run(tauri::generate_context!())
