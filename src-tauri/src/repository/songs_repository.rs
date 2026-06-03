@@ -219,3 +219,51 @@ impl SongsRepository {
             .await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::SongsRepository;
+    use crate::test_helpers::songs::{insert_song_with_metadata, setup_songs_pool};
+
+    #[tokio::test]
+    async fn select_with_metadata_returns_existing_song_and_metadata() {
+        let pool = setup_songs_pool().await;
+        insert_song_with_metadata(&pool, 1).await;
+
+        let (song, metadata) = SongsRepository::new()
+            .select_with_metadata(&pool, &1)
+            .await
+            .expect("select song with metadata");
+
+        assert_eq!(song.id, 1);
+        assert_eq!(song.filepath, "/music/song-1.flac");
+        assert_eq!(song.hash, "hash-1");
+        assert_eq!(song.track_title.as_deref(), Some("Track Title"));
+        assert_eq!(song.track_artist.as_deref(), Some("Track Artist"));
+        assert_eq!(song.album_artist.as_deref(), Some("Album Artist"));
+        assert_eq!(song.album_title.as_deref(), Some("Album Title"));
+        assert_eq!(song.disc_number, Some(1));
+        assert_eq!(song.track_number, Some(2));
+        assert_eq!(metadata.song_id, 1);
+        assert_eq!(metadata.recording_date.as_deref(), Some("2026"));
+        assert_eq!(metadata.genre.as_deref(), Some("Rock"));
+        assert_eq!(metadata.composer.as_deref(), Some("Composer"));
+        assert_eq!(metadata.audio_bitrate, Some(320000));
+        assert_eq!(metadata.bit_depth, Some(16));
+        assert_eq!(metadata.channels, Some(2));
+        assert_eq!(metadata.sample_rate, Some(44100));
+        assert_eq!(metadata.duration_ms, Some(180000));
+    }
+
+    #[tokio::test]
+    async fn select_with_metadata_returns_sqlx_error_for_missing_id() {
+        let pool = setup_songs_pool().await;
+
+        let error = SongsRepository::new()
+            .select_with_metadata(&pool, &999)
+            .await
+            .expect_err("missing song should return sqlx error");
+
+        assert!(matches!(error, sqlx::Error::RowNotFound));
+    }
+}

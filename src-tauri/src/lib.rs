@@ -3,6 +3,8 @@ mod constants;
 mod models;
 mod repository;
 mod services;
+#[cfg(test)]
+mod test_helpers;
 
 use std::{str::FromStr, time::Duration};
 
