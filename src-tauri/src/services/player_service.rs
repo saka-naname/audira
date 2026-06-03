@@ -81,8 +81,6 @@ impl PlayerService {
 
         runtime.player.append(source);
 
-        println!("Start playing: {}", song.track_title.unwrap_or_default());
-
         Ok(())
     }
 
