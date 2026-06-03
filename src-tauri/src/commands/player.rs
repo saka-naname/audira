@@ -2,7 +2,12 @@ use crate::services::player_service::{PlayerService, PlayerServiceError};
 
 #[tauri::command]
 pub async fn play_track(service: tauri::State<'_, PlayerService>, id: i64) -> Result<(), String> {
-    service.play_track(&id).await.map_err(service_error_message)
+    service
+        .play_track(&id)
+        .await
+        .map_err(service_error_message)?;
+
+    Ok(())
 }
 
 fn service_error_message(error: PlayerServiceError) -> String {

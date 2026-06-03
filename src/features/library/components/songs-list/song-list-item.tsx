@@ -2,7 +2,7 @@ import { Button } from "@base-ui/react";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 import { useCallback } from "react";
 import type { SongListItem } from "@/features/library/types";
-import { playTrack } from "../../api/songs-api";
+import { playTrack } from "@/features/player/api/player-api";
 
 type SongListItemRowProps = Readonly<{
   song: SongListItem;

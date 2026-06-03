@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PlayerEventBridge } from "@/features/player/components/player-event-bridge";
 import type { RouterContext } from "@/lib/query-client";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -32,6 +33,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           {children}
           <Scripts />
         </TooltipProvider>
+        <PlayerEventBridge />
       </body>
     </html>
   );
