@@ -12,10 +12,7 @@ use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player};
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 
-use crate::{
-    models::{song_metadata::SongMetadata, songs::Songs},
-    repository::songs_repository::SongsRepository,
-};
+use crate::{models::songs::Songs, repository::songs_repository::SongsRepository};
 
 #[derive(Debug)]
 pub enum PlayerServiceError {
@@ -27,6 +24,7 @@ pub enum PlayerServiceError {
 
 #[derive(Clone)]
 pub enum PlayerEvent {
+    TrackStarted { song: Songs },
     TrackEnded,
 }
 
@@ -84,8 +82,8 @@ impl PlayerService {
     }
 
     /// ID 指定でトラックを再生する。
-    pub async fn play_track(&self, id: &i64) -> Result<(Songs, SongMetadata), PlayerServiceError> {
-        let (song, song_metadata) = self
+    pub async fn play_track(&self, id: &i64) -> Result<(), PlayerServiceError> {
+        let (song, _) = self
             .songs_repository
             .select_with_metadata(&self.db_pool, id)
             .await
@@ -112,6 +110,9 @@ impl PlayerService {
 
         runtime.player.stop();
         runtime.player.append(source);
+
+        let _ = event_tx.send(PlayerEvent::TrackStarted { song });
+
         runtime
             .player
             .append(rodio::source::EmptyCallback::new(Box::new(move || {
@@ -120,6 +121,6 @@ impl PlayerService {
                 }
             })));
 
-        Ok((song, song_metadata))
+        Ok(())
     }
 }

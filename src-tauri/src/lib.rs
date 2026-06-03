@@ -31,6 +31,16 @@ struct PlayerSnapshotDto {
     status: String,
 }
 
+#[derive(Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct TrackDto {
+    id: i64,
+    filepath: String,
+    track_title: Option<String>,
+    track_artist: Option<String>,
+    album_title: Option<String>,
+}
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn dump_metadata(path: &str) -> Result<(), String> {
@@ -96,6 +106,25 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 loop {
                     match event_rx.recv().await {
+                        Ok(PlayerEvent::TrackStarted { song }) => {
+                            let _ = app_handle.emit(
+                                "player://track",
+                                TrackDto {
+                                    id: song.id,
+                                    filepath: song.filepath,
+                                    track_title: song.track_title,
+                                    track_artist: song.track_artist,
+                                    album_title: song.album_title,
+                                },
+                            );
+
+                            let _ = app_handle.emit(
+                                "player://state",
+                                PlayerSnapshotDto {
+                                    status: String::from("playing"),
+                                },
+                            );
+                        }
                         Ok(PlayerEvent::TrackEnded) => {
                             let _ = app_handle.emit(
                                 "player://state",
