@@ -85,4 +85,16 @@ impl PlayerService {
 
         Ok(())
     }
+
+    /// 再生中のトラックを停止する。
+    pub fn stop_track(&self) -> Result<(), PlayerServiceError> {
+        let mut state = self.ensure_runtime()?;
+        let runtime = state
+            .as_mut()
+            .ok_or(PlayerServiceError::RuntimeInitializeError)?;
+
+        runtime.player.stop();
+
+        Ok(())
+    }
 }

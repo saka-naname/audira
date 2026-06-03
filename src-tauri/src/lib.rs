@@ -85,6 +85,7 @@ pub fn run() {
             commands::albums::list_albums,
             commands::library::scan_library,
             commands::player::play_track,
+            commands::player::stop_track,
             commands::songs::list_songs
         ])
         .run(tauri::generate_context!())

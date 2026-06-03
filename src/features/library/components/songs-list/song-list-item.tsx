@@ -2,14 +2,15 @@ import { Button } from "@base-ui/react";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 import { useCallback } from "react";
 import type { SongListItem } from "@/features/library/types";
-import { playTrack } from "../../api/songs-api";
+import { playTrack, stopTrack } from "../../api/songs-api";
 
 type SongListItemRowProps = Readonly<{
   song: SongListItem;
 }>;
 
 export default function SongListItemRow({ song }: SongListItemRowProps) {
-  const handlePlay = useCallback(() => {
+  const handlePlay = useCallback(async () => {
+    await stopTrack();
     void playTrack(song.id);
   }, [song]);
 
