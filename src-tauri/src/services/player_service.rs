@@ -8,7 +8,13 @@ use std::{
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player};
 use sqlx::SqlitePool;
 
-use crate::repository::songs_repository::SongsRepository;
+use crate::{
+    models::{
+        song_metadata::{self, SongMetadata},
+        songs::Songs,
+    },
+    repository::songs_repository::SongsRepository,
+};
 
 #[derive(Debug)]
 pub enum PlayerServiceError {
@@ -59,14 +65,14 @@ impl PlayerService {
     }
 
     /// ID 指定でトラックを再生する。
-    pub async fn play_track(&self, id: &i64) -> Result<(), PlayerServiceError> {
-        let (song, _) = self
+    pub async fn play_track(&self, id: &i64) -> Result<(Songs, SongMetadata), PlayerServiceError> {
+        let (song, song_metadata) = self
             .songs_repository
             .select_with_metadata(&self.db_pool, id)
             .await
             .map_err(|_| PlayerServiceError::DataNotFoundError)?;
 
-        let path = song.filepath;
+        let path = &song.filepath;
 
         let file =
             File::open(PathBuf::from(path)).map_err(|_| PlayerServiceError::FileOpenError)?;
@@ -82,6 +88,6 @@ impl PlayerService {
         runtime.player.stop();
         runtime.player.append(source);
 
-        Ok(())
+        Ok((song, song_metadata))
     }
 }
