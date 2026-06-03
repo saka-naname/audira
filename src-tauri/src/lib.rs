@@ -12,14 +12,24 @@ use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
 };
+use serde::Serialize;
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode};
-use tauri::{async_runtime, Manager};
+use tauri::{async_runtime, Emitter, Manager};
 use tauri_plugin_store::StoreExt;
+use tokio::sync::broadcast;
 
 use crate::services::{
-    albums_service::AlbumsService, library_service::LibraryService, player_service::PlayerService,
+    albums_service::AlbumsService,
+    library_service::LibraryService,
+    player_service::{PlayerEvent, PlayerService},
     songs_service::SongsService,
 };
+
+#[derive(Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct PlayerSnapshotDto {
+    status: String,
+}
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -77,6 +87,33 @@ pub fn run() {
             // Initialize config store
             let store = app.store("config.json")?;
             store.close_resource();
+
+            // Initialize event loop
+            let app_handle = app.handle().clone();
+            let player_service = app.state::<PlayerService>();
+            let mut event_rx = player_service.subscribe();
+
+            tauri::async_runtime::spawn(async move {
+                loop {
+                    match event_rx.recv().await {
+                        Ok(PlayerEvent::TrackEnded) => {
+                            let _ = app_handle.emit(
+                                "player://state",
+                                PlayerSnapshotDto {
+                                    status: String::from("idle"),
+                                },
+                            );
+
+                            let _ = app_handle.emit("player://track-ended", ());
+                        }
+                        Err(broadcast::error::RecvError::Lagged(_)) => {
+                            // TODO: プレイヤーの最新の状態を再取得する処理を作成する
+                        }
+                        Err(broadcast::error::RecvError::Closed) => break,
+                    }
+                }
+            });
+
             Ok(())
         })
         .plugin(tauri_plugin_dialog::init())

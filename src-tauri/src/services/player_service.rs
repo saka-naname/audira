@@ -2,17 +2,18 @@ use std::{
     fs::File,
     io::BufReader,
     path::PathBuf,
-    sync::{Mutex, MutexGuard},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc, Mutex, MutexGuard,
+    },
 };
 
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player};
 use sqlx::SqlitePool;
+use tokio::sync::broadcast;
 
 use crate::{
-    models::{
-        song_metadata::{self, SongMetadata},
-        songs::Songs,
-    },
+    models::{song_metadata::SongMetadata, songs::Songs},
     repository::songs_repository::SongsRepository,
 };
 
@@ -24,10 +25,18 @@ pub enum PlayerServiceError {
     DecodeError,
 }
 
+#[derive(Clone)]
+pub enum PlayerEvent {
+    TrackEnded,
+}
+
 pub struct PlayerService {
     state: Mutex<Option<PlayerRuntime>>,
     db_pool: SqlitePool,
     songs_repository: SongsRepository,
+    event_tx: broadcast::Sender<PlayerEvent>,
+    playback_generation: AtomicU64,
+    current_generation: Arc<AtomicU64>,
 }
 
 struct PlayerRuntime {
@@ -37,11 +46,21 @@ struct PlayerRuntime {
 
 impl PlayerService {
     pub fn new(db_pool: SqlitePool) -> Self {
+        let (event_tx, _) = broadcast::channel(32);
+
         Self {
             state: Mutex::new(None),
             db_pool,
             songs_repository: SongsRepository::new(),
+            event_tx,
+            playback_generation: AtomicU64::new(0),
+            current_generation: Arc::new(AtomicU64::new(0)),
         }
+    }
+
+    /// イベントのレシーバーを登録する
+    pub fn subscribe(&self) -> broadcast::Receiver<PlayerEvent> {
+        self.event_tx.subscribe()
     }
 
     /// プレイヤー状態を管理するランタイムのロックを獲得する。
@@ -85,8 +104,21 @@ impl PlayerService {
             .as_mut()
             .ok_or(PlayerServiceError::RuntimeInitializeError)?;
 
+        let generation = self.playback_generation.fetch_add(1, Ordering::SeqCst) + 1;
+        self.current_generation.store(generation, Ordering::SeqCst);
+
+        let current_generation = self.current_generation.clone();
+        let event_tx = self.event_tx.clone();
+
         runtime.player.stop();
         runtime.player.append(source);
+        runtime
+            .player
+            .append(rodio::source::EmptyCallback::new(Box::new(move || {
+                if current_generation.load(Ordering::SeqCst) == generation {
+                    let _ = event_tx.send(PlayerEvent::TrackEnded);
+                }
+            })));
 
         Ok((song, song_metadata))
     }
