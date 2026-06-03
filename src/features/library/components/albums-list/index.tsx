@@ -7,12 +7,12 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAlbumsInfiniteQuery } from "@/features/albums/hooks/use-albums-infinite-query";
+import { useAlbumsInfiniteQuery } from "@/features/library/hooks/use-albums-infinite-query";
 import type {
   AlbumListItem,
   AlbumSort,
   ListAlbumsResponse,
-} from "@/features/albums/types";
+} from "@/features/library/types";
 import { cn } from "@/lib/utils";
 import AlbumListItemRow from "./album-list-item";
 

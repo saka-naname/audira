@@ -1,4 +1,4 @@
-import type { AlbumListItem } from "@/features/albums/types";
+import type { AlbumListItem } from "@/features/library/types";
 
 type AlbumListItemRowProps = Readonly<{
   album: AlbumListItem;

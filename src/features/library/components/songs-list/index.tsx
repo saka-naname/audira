@@ -7,12 +7,12 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSongsInfiniteQuery } from "@/features/songs/hooks/use-songs-infinite-query";
+import { useSongsInfiniteQuery } from "@/features/library/hooks/use-songs-infinite-query";
 import type {
   ListSongsResponse,
   SongListItem,
   SongSort,
-} from "@/features/songs/types";
+} from "@/features/library/types";
 import { cn } from "@/lib/utils";
 import SongListItemRow from "./song-list-item";
 

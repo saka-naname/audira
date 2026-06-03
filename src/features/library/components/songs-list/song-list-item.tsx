@@ -1,4 +1,4 @@
-import type { SongListItem } from "@/features/songs/types";
+import type { SongListItem } from "@/features/library/types";
 
 type SongListItemRowProps = Readonly<{
   song: SongListItem;

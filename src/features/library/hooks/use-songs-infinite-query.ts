@@ -1,6 +1,6 @@
 import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { listSongs } from "@/features/songs/api/songs-api";
-import type { ListSongsResponse, SongSort } from "@/features/songs/types";
+import { listSongs } from "@/features/library/api/songs-api";
+import type { ListSongsResponse, SongSort } from "@/features/library/types";
 
 const SONGS_PAGE_SIZE = 50;
 

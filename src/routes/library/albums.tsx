@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import AlbumsList from "@/features/albums/components/albums-list";
-import type { AlbumSort } from "@/features/albums/types";
+import AlbumsList from "@/features/library/components/albums-list";
+import type { AlbumSort } from "@/features/library/types";
 
 const defaultSort: AlbumSort = {
   sortBy: "title",

@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type {
   ListAlbumsRequest,
   ListAlbumsResponse,
-} from "@/features/albums/types";
+} from "@/features/library/types";
 
 export async function listAlbums(
   request: ListAlbumsRequest,
