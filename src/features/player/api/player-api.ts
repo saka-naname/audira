@@ -7,3 +7,11 @@ export async function playTrack(id: number) {
 export async function stopTrack() {
   return invoke("stop_track");
 }
+
+export async function pause() {
+  return invoke("pause");
+}
+
+export async function resume() {
+  return invoke("resume");
+}
