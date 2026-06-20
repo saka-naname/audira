@@ -10,6 +10,20 @@ pub async fn play_track(service: tauri::State<'_, PlayerService>, id: i64) -> Re
     Ok(())
 }
 
+#[tauri::command]
+pub async fn pause(service: tauri::State<'_, PlayerService>) -> Result<(), String> {
+    service.pause().await.map_err(service_error_message)?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn resume(service: tauri::State<'_, PlayerService>) -> Result<(), String> {
+    service.resume().await.map_err(service_error_message)?;
+
+    Ok(())
+}
+
 fn service_error_message(error: PlayerServiceError) -> String {
     match error {
         PlayerServiceError::RuntimeInitializeError => {

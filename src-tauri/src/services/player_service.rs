@@ -26,6 +26,8 @@ pub enum PlayerServiceError {
 pub enum PlayerEvent {
     TrackStarted { song: Songs },
     TrackEnded,
+    TrackPaused,
+    TrackResumed,
 }
 
 pub struct PlayerService {
@@ -113,6 +115,8 @@ impl PlayerService {
 
         let _ = event_tx.send(PlayerEvent::TrackStarted { song });
 
+        // トラック再生終了時にイベントを送信するコールバックを登録する。
+        // トラックのスキップ等が行われた場合は発火しない。
         runtime
             .player
             .append(rodio::source::EmptyCallback::new(Box::new(move || {
@@ -120,6 +124,40 @@ impl PlayerService {
                     let _ = event_tx.send(PlayerEvent::TrackEnded);
                 }
             })));
+
+        Ok(())
+    }
+
+    /// 再生中のトラックを一時停止する。
+    /// 再生中でない場合は何もしない。
+    pub async fn pause(&self) -> Result<(), PlayerServiceError> {
+        let event_tx = self.event_tx.clone();
+        let mut state = self.ensure_runtime()?;
+        let runtime = state
+            .as_mut()
+            .ok_or(PlayerServiceError::RuntimeInitializeError)?;
+
+        if !runtime.player.is_paused() {
+            runtime.player.pause();
+            let _ = event_tx.send(PlayerEvent::TrackPaused);
+        }
+
+        Ok(())
+    }
+
+    /// 一時停止されているトラックの再生を再開する。
+    /// 一時停止中でない場合は何もしない。
+    pub async fn resume(&self) -> Result<(), PlayerServiceError> {
+        let event_tx = self.event_tx.clone();
+        let mut state = self.ensure_runtime()?;
+        let runtime = state
+            .as_mut()
+            .ok_or(PlayerServiceError::RuntimeInitializeError)?;
+
+        if runtime.player.is_paused() {
+            runtime.player.play();
+            let _ = event_tx.send(PlayerEvent::TrackResumed);
+        }
 
         Ok(())
     }

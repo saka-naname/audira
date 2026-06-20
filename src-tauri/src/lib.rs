@@ -135,6 +135,22 @@ pub fn run() {
 
                             let _ = app_handle.emit("player://track-ended", ());
                         }
+                        Ok(PlayerEvent::TrackPaused) => {
+                            let _ = app_handle.emit(
+                                "player://state",
+                                PlayerSnapshotDto {
+                                    status: String::from("paused"),
+                                },
+                            );
+                        }
+                        Ok(PlayerEvent::TrackResumed) => {
+                            let _ = app_handle.emit(
+                                "player://state",
+                                PlayerSnapshotDto {
+                                    status: String::from("playing"),
+                                },
+                            );
+                        }
                         Err(broadcast::error::RecvError::Lagged(_)) => {
                             // TODO: プレイヤーの最新の状態を再取得する処理を作成する
                         }
@@ -153,6 +169,8 @@ pub fn run() {
             commands::albums::list_albums,
             commands::library::scan_library,
             commands::player::play_track,
+            commands::player::pause,
+            commands::player::resume,
             commands::songs::list_songs
         ])
         .run(tauri::generate_context!())
