@@ -1,7 +1,7 @@
 import { IconMusic } from "@tabler/icons-react";
 import { useAtomValue } from "jotai";
 import { Card, CardContent } from "@/components/ui/card";
-import { playerCurrentTrackAtom } from "../state/playerAtoms";
+import { playerCurrentTrackAtom } from "../../state/playerAtoms";
 
 export default function SidebarPlayer() {
   const currentTrack = useAtomValue(playerCurrentTrackAtom);
