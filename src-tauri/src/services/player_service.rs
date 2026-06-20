@@ -112,6 +112,7 @@ impl PlayerService {
 
         runtime.player.stop();
         runtime.player.append(source);
+        runtime.player.play();
 
         let _ = event_tx.send(PlayerEvent::TrackStarted { song });
 
