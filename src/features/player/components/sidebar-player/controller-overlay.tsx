@@ -4,6 +4,7 @@ import {
   IconPlayerPlayFilled,
 } from "@tabler/icons-react";
 import { useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 import { pause, resume } from "../../api/player-api";
 import { playerSnapshotAtom } from "../../state/playerAtoms";
@@ -11,21 +12,24 @@ import { playerSnapshotAtom } from "../../state/playerAtoms";
 export default function ControllerOverlay() {
   const { status } = useAtomValue(playerSnapshotAtom);
 
-  const handleTogglePause = useCallback(async () => {
-    switch (status) {
-      case "idle": {
-        return;
+  const handleTogglePause = useAtomCallback(
+    useCallback(async (get) => {
+      const currentStatus = get(playerSnapshotAtom).status;
+      switch (currentStatus) {
+        case "idle": {
+          return;
+        }
+        case "playing": {
+          void pause();
+          break;
+        }
+        case "paused": {
+          void resume();
+          break;
+        }
       }
-      case "playing": {
-        void pause();
-        break;
-      }
-      case "paused": {
-        void resume();
-        break;
-      }
-    }
-  }, [status]);
+    }, []),
+  );
 
   return (
     <div className="group/display absolute inset-0 bg-black/0 hover:bg-black/25 has-focus-visible:bg-black/25">
