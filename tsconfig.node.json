@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
+    "rootDir": "./src",
     "skipLibCheck": true,
     "types": ["node"],
     "module": "ESNext",

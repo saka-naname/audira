@@ -9,6 +9,9 @@ run = "npm run tauri dev"
 alias = "lint:frontend"
 run = "npm run check"
 
+[tasks."check:frontend-type"]
+run = "npm run type-check"
+
 [tasks."check:backend"]
 alias = "lint:backend"
 run = "cargo check --manifest-path src-tauri/Cargo.toml"
