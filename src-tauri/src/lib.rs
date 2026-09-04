@@ -8,6 +8,11 @@ mod test_helpers;
 
 use std::{str::FromStr, time::Duration};
 
+use diesel::{
+    connection::SimpleConnection,
+    r2d2::{ConnectionManager, CustomizeConnection, Pool},
+    SqliteConnection,
+};
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
@@ -24,6 +29,28 @@ use crate::services::{
     player_service::{PlayerEvent, PlayerService},
     songs_service::SongsService,
 };
+
+type SqlitePool = Pool<ConnectionManager<SqliteConnection>>;
+
+#[derive(Debug, Clone)]
+pub struct Database {
+    sqlx_pool: sqlx::SqlitePool,
+    diesel_pool: SqlitePool,
+}
+
+#[derive(Debug)]
+struct SqliteConnectionCustomizer;
+
+impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for SqliteConnectionCustomizer {
+    fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
+        conn.batch_execute("PRAGMA busy_timeout = 5000;")?;
+        conn.batch_execute("PRAGMA journal_mode = WAL;")?;
+        conn.batch_execute("PRAGMA synchronous = NORMAL")?;
+        conn.batch_execute("PRAGMA foreign_keys = ON;")?;
+
+        Ok(())
+    }
+}
 
 #[derive(Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -81,7 +108,7 @@ pub fn run() {
                 .journal_mode(SqliteJournalMode::Wal)
                 .busy_timeout(Duration::from_secs(30));
 
-            let pool = async_runtime::block_on(async {
+            let sqlx_pool = async_runtime::block_on(async {
                 let pool = sqlx::sqlite::SqlitePoolOptions::new()
                     // .max_connections(4)
                     .connect_with(opts)
@@ -89,10 +116,28 @@ pub fn run() {
                 sqlx::migrate!("./migrations").run(&pool).await?;
                 Ok::<_, sqlx::Error>(pool)
             })?;
-            app.manage(LibraryService::new(pool.clone()));
-            app.manage(SongsService::new(pool.clone()));
-            app.manage(AlbumsService::new(pool.clone()));
-            app.manage(PlayerService::new(pool));
+
+            let diesel_pool = async_runtime::block_on(async {
+                let manager = ConnectionManager::<SqliteConnection>::new(db_path);
+                let pool = Pool::builder()
+                    .connection_timeout(Duration::from_secs(30))
+                    .max_size(4)
+                    .min_idle(Some(1))
+                    .connection_customizer(Box::new(SqliteConnectionCustomizer))
+                    .build(manager)
+                    .expect("Failed to create Diesel connection pool");
+                Ok::<_, diesel::r2d2::PoolError>(pool)
+            })?;
+
+            let db = Database {
+                sqlx_pool,
+                diesel_pool,
+            };
+
+            app.manage(LibraryService::new(db.clone()));
+            app.manage(SongsService::new(db.clone()));
+            app.manage(AlbumsService::new(db.clone()));
+            app.manage(PlayerService::new(db.clone()));
 
             // Initialize config store
             let store = app.store("config.json")?;

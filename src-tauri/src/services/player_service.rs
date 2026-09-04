@@ -9,10 +9,9 @@ use std::{
 };
 
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player};
-use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 
-use crate::{models::songs::Songs, repository::songs_repository::SongsRepository};
+use crate::{models::songs::Songs, repository::songs_repository::SongsRepository, Database};
 
 #[derive(Debug)]
 pub enum PlayerServiceError {
@@ -32,7 +31,7 @@ pub enum PlayerEvent {
 
 pub struct PlayerService {
     state: Mutex<Option<PlayerRuntime>>,
-    db_pool: SqlitePool,
+    db: Database,
     songs_repository: SongsRepository,
     event_tx: broadcast::Sender<PlayerEvent>,
     playback_generation: AtomicU64,
@@ -45,12 +44,12 @@ struct PlayerRuntime {
 }
 
 impl PlayerService {
-    pub fn new(db_pool: SqlitePool) -> Self {
+    pub fn new(db: Database) -> Self {
         let (event_tx, _) = broadcast::channel(32);
 
         Self {
             state: Mutex::new(None),
-            db_pool,
+            db,
             songs_repository: SongsRepository::new(),
             event_tx,
             playback_generation: AtomicU64::new(0),
@@ -87,7 +86,7 @@ impl PlayerService {
     pub async fn play_track(&self, id: &i64) -> Result<(), PlayerServiceError> {
         let (song, _) = self
             .songs_repository
-            .select_with_metadata(&self.db_pool, id)
+            .select_with_metadata(&self.db.sqlx_pool, id)
             .await
             .map_err(|_| PlayerServiceError::DataNotFoundError)?;
 

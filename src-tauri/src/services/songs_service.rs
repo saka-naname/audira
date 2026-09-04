@@ -1,9 +1,11 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use sqlx::SqlitePool;
 
-use crate::repository::songs_repository::{
-    ListSongsParams, SongsRepository, SongsSortDirection, SongsSortKey,
+use crate::{
+    repository::songs_repository::{
+        ListSongsParams, SongsRepository, SongsSortDirection, SongsSortKey,
+    },
+    Database,
 };
 
 const DEFAULT_PAGE_SIZE: i64 = 50;
@@ -82,14 +84,14 @@ pub enum ListSongsError {
 
 #[derive(Debug, Clone)]
 pub struct SongsService {
-    db_pool: SqlitePool,
+    db: Database,
     songs_repository: SongsRepository,
 }
 
 impl SongsService {
-    pub fn new(db_pool: SqlitePool) -> Self {
+    pub fn new(db: Database) -> Self {
         Self {
-            db_pool,
+            db,
             songs_repository: SongsRepository::new(),
         }
     }
@@ -107,7 +109,7 @@ impl SongsService {
         let rows = self
             .songs_repository
             .list_songs(
-                &self.db_pool,
+                &self.db.sqlx_pool,
                 &ListSongsParams {
                     offset,
                     page_size: page_size + 1,
