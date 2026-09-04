@@ -1,5 +1,6 @@
 mod commands;
 mod constants;
+mod libs;
 mod models;
 mod repository;
 mod services;
@@ -23,20 +24,15 @@ use tauri::{async_runtime, Emitter, Manager};
 use tauri_plugin_store::StoreExt;
 use tokio::sync::broadcast;
 
-use crate::services::{
-    albums_service::AlbumsService,
-    library_service::LibraryService,
-    player_service::{PlayerEvent, PlayerService},
-    songs_service::SongsService,
+use crate::{
+    libs::db::Database,
+    services::{
+        albums_service::AlbumsService,
+        library_service::LibraryService,
+        player_service::{PlayerEvent, PlayerService},
+        songs_service::SongsService,
+    },
 };
-
-type SqlitePool = Pool<ConnectionManager<SqliteConnection>>;
-
-#[derive(Debug, Clone)]
-pub struct Database {
-    sqlx_pool: sqlx::SqlitePool,
-    diesel_pool: SqlitePool,
-}
 
 #[derive(Debug)]
 struct SqliteConnectionCustomizer;

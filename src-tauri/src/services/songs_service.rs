@@ -2,10 +2,10 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    libs::db::Database,
     repository::songs_repository::{
         ListSongsParams, SongsRepository, SongsSortDirection, SongsSortKey,
     },
-    Database,
 };
 
 const DEFAULT_PAGE_SIZE: i64 = 50;

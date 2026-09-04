@@ -2,10 +2,10 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    libs::db::Database,
     repository::albums_repository::{
         AlbumsRepository, AlbumsSortDirection, AlbumsSortKey, ListAlbumsParams,
     },
-    Database,
 };
 
 const DEFAULT_PAGE_SIZE: i64 = 50;

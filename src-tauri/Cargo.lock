@@ -314,6 +314,7 @@ dependencies = [
  "chrono",
  "diesel",
  "lofty",
+ "r2d2",
  "rayon",
  "rodio",
  "serde",

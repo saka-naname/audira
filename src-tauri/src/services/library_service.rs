@@ -9,12 +9,12 @@ use sqlx::SqliteConnection;
 use walkdir::WalkDir;
 
 use crate::constants::AUDIO_EXTENSIONS;
+use crate::libs::db::Database;
 use crate::models::songs::Songs;
 use crate::repository::albums_repository::{AlbumsRepository, InsertAlbumsParams};
 use crate::repository::songs_repository::{
     InsertSongMetadataParams, InsertSongsParams, SongsRepository,
 };
-use crate::Database;
 
 #[derive(Debug)]
 pub enum LibraryScanError {

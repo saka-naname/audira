@@ -11,7 +11,9 @@ use std::{
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player};
 use tokio::sync::broadcast;
 
-use crate::{models::songs::Songs, repository::songs_repository::SongsRepository, Database};
+use crate::{
+    libs::db::Database, models::songs::Songs, repository::songs_repository::SongsRepository,
+};
 
 #[derive(Debug)]
 pub enum PlayerServiceError {
