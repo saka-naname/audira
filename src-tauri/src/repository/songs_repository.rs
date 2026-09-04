@@ -60,7 +60,7 @@ pub struct InsertSongsParams {
     pub album_artist_sort_order: Option<String>,
     pub track_title_sort_order: Option<String>,
     pub track_artist_sort_order: Option<String>,
-    pub thumbnail_id: Option<String>,
+    pub thumbnail_id: Option<i64>,
 }
 
 #[derive(Debug, Clone, Default)]

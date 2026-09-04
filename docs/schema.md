@@ -20,6 +20,7 @@ erDiagram
         string albumArtistSortOrder
         string trackTitleSortOrder
         string trackArtistSortOrder
+        uint thumbnailId FK
         timestamp updateAt
     }
 
@@ -43,7 +44,7 @@ erDiagram
     }
 
     thumbnails {
-        string id PK "NOT NULL"
+        uint id PK "NOT NULL"
         string filepath "NOT NULL"
     }
 ```

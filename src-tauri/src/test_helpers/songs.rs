@@ -26,7 +26,7 @@ pub(crate) async fn setup_songs_pool() -> SqlitePool {
             album_artist_sort_order TEXT,
             track_title_sort_order TEXT,
             track_artist_sort_order TEXT,
-            thumbnail_id TEXT,
+            thumbnail_id INTEGER,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
