@@ -44,7 +44,7 @@ mise exec -- diesel migration generate add_library_roots
 すでに適用されたmigrationは編集しません。修正が必要になった場合は、新しいmigrationを追加してください。
 
 > [!IMPORTANT]
-> 
+>
 > 現在 sqlx から diesel への移行作業を実行中のため、diesel 側のマイグレーションは正式なものではありません。
 > [#38](https://github.com/saka-naname/audira/issues/38) で再度構築を行う予定です。
 
@@ -84,7 +84,7 @@ mise run diesel:migrate
 ## `schema.rs`の確認
 
 > [!WARNING]
-> 
+>
 > `schema.rs` は手動で編集しないでください。
 
 `migration run`が成功すると、`diesel.toml`の設定により[`src/schema.rs`](../src/schema.rs)が更新されます。手動で再生成したい場合は次を実行します。
