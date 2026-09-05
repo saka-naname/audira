@@ -4,6 +4,7 @@ pub mod database_path;
 mod libs;
 mod models;
 mod repository;
+mod schema;
 mod services;
 #[cfg(test)]
 mod test_helpers;

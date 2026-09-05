@@ -1,3 +1,5 @@
+※ Deprecated / sqlx から diesel への移行のため
+
 一旦。後々タスクランナーを用意したい
 
 ```zsh
