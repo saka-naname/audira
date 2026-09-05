@@ -38,3 +38,6 @@ rodio = "0.22.2"
 diesel = { version = "2.3.12", features = ["sqlite", "chrono", "r2d2", "returning_clauses_for_sqlite_3_35", "32-column-tables"] }
 r2d2 = "0.8.10"
 dirs = "6"
+
+[dev-dependencies]
+tempfile = "3"

@@ -207,3 +207,6 @@ mod tests {
         assert!(matches!(error, DatabaseExecuteError::TaskJoinFailed(_)));
     }
 }
+
+#[cfg(test)]
+mod compatibility_tests;
