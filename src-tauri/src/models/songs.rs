@@ -41,8 +41,8 @@ pub struct Songs {
     pub track_title_sort_order: Option<String>,
     #[sqlx_gen(sql_type = "TEXT")]
     pub track_artist_sort_order: Option<String>,
-    #[sqlx_gen(sql_type = "TEXT")]
-    pub thumbnail_id: Option<String>,
+    #[sqlx_gen(sql_type = "INTEGER")]
+    pub thumbnail_id: Option<i64>,
     #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]
     pub created_at: NaiveDateTime,
     #[sqlx_gen(sql_type = "DATETIME", column_default = "CURRENT_TIMESTAMP")]

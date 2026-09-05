@@ -5,10 +5,11 @@ use std::path::Path;
 use blake3::Hasher;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::ItemKey;
-use sqlx::{SqliteConnection, SqlitePool};
+use sqlx::SqliteConnection;
 use walkdir::WalkDir;
 
 use crate::constants::AUDIO_EXTENSIONS;
+use crate::libs::db::Database;
 use crate::models::songs::Songs;
 use crate::repository::albums_repository::{AlbumsRepository, InsertAlbumsParams};
 use crate::repository::songs_repository::{
@@ -28,15 +29,15 @@ pub enum LibraryScanError {
 }
 
 pub struct LibraryService {
-    pool: SqlitePool,
+    db: Database,
     songs_repository: SongsRepository,
     albums_repository: AlbumsRepository,
 }
 
 impl LibraryService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(db: Database) -> Self {
         Self {
-            pool,
+            db,
             songs_repository: SongsRepository::new(),
             albums_repository: AlbumsRepository::new(),
         }
@@ -53,7 +54,8 @@ impl LibraryService {
         let mut count = 0;
 
         let mut tx = self
-            .pool
+            .db
+            .sqlx_pool
             .begin()
             .await
             .map_err(|_| LibraryScanError::BeginTransactionFailed)?;

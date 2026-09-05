@@ -1,6 +1,7 @@
 [tools]
 node = "24.18.0"
 rust = "1.95.0"
+"cargo:diesel_cli" = { version = "2.3.12", default-features = false, features = ["sqlite"] }
 
 [tasks.dev]
 run = "npm run tauri dev"
@@ -28,3 +29,15 @@ run = "cargo test --manifest-path src-tauri/Cargo.toml"
 
 [tasks.test]
 run = [{ tasks = ["test:*"] }]
+
+[tasks.database-path]
+run = "cargo run --quiet --manifest-path src-tauri/Cargo.toml --bin audira-db-path"
+
+[tasks."diesel:migrate"]
+run = "diesel --config-file src-tauri/diesel.toml migration run --database-url \"$(mise run database-path)\""
+
+[tasks."diesel:redo"]
+run = "diesel --config-file src-tauri/diesel.toml migration redo --database-url \"$(mise run database-path)\""
+
+[tasks."diesel:schema"]
+run = "diesel --config-file src-tauri/diesel.toml print-schema --database-url \"$(mise run database-path)\" > src-tauri/src/schema.rs"

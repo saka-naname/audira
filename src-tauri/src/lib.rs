@@ -1,13 +1,21 @@
 mod commands;
 mod constants;
+pub mod database_path;
+mod libs;
 mod models;
 mod repository;
+mod schema;
 mod services;
 #[cfg(test)]
 mod test_helpers;
 
 use std::{str::FromStr, time::Duration};
 
+use diesel::{
+    connection::SimpleConnection,
+    r2d2::{ConnectionManager, CustomizeConnection, Pool},
+    SqliteConnection,
+};
 use lofty::{
     file::{AudioFile, TaggedFileExt},
     read_from_path,
@@ -18,12 +26,29 @@ use tauri::{async_runtime, Emitter, Manager};
 use tauri_plugin_store::StoreExt;
 use tokio::sync::broadcast;
 
-use crate::services::{
-    albums_service::AlbumsService,
-    library_service::LibraryService,
-    player_service::{PlayerEvent, PlayerService},
-    songs_service::SongsService,
+use crate::{
+    libs::db::Database,
+    services::{
+        albums_service::AlbumsService,
+        library_service::LibraryService,
+        player_service::{PlayerEvent, PlayerService},
+        songs_service::SongsService,
+    },
 };
+
+#[derive(Debug)]
+struct SqliteConnectionCustomizer;
+
+impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for SqliteConnectionCustomizer {
+    fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
+        conn.batch_execute("PRAGMA busy_timeout = 5000;")?;
+        conn.batch_execute("PRAGMA journal_mode = WAL;")?;
+        conn.batch_execute("PRAGMA synchronous = NORMAL")?;
+        conn.batch_execute("PRAGMA foreign_keys = ON;")?;
+
+        Ok(())
+    }
+}
 
 #[derive(Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -74,14 +99,16 @@ pub fn run() {
             // Initialize database
             let db_dir = app.path().app_local_data_dir()?;
             std::fs::create_dir_all(&db_dir)?;
-            let db_path = db_dir.join("libdata.db").to_string_lossy().to_string();
+            let db_path = database_path::from_app_local_data_dir(db_dir)
+                .to_string_lossy()
+                .to_string();
 
             let opts = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
                 .create_if_missing(true)
                 .journal_mode(SqliteJournalMode::Wal)
                 .busy_timeout(Duration::from_secs(30));
 
-            let pool = async_runtime::block_on(async {
+            let sqlx_pool = async_runtime::block_on(async {
                 let pool = sqlx::sqlite::SqlitePoolOptions::new()
                     // .max_connections(4)
                     .connect_with(opts)
@@ -89,10 +116,28 @@ pub fn run() {
                 sqlx::migrate!("./migrations").run(&pool).await?;
                 Ok::<_, sqlx::Error>(pool)
             })?;
-            app.manage(LibraryService::new(pool.clone()));
-            app.manage(SongsService::new(pool.clone()));
-            app.manage(AlbumsService::new(pool.clone()));
-            app.manage(PlayerService::new(pool));
+
+            let diesel_pool = async_runtime::block_on(async {
+                let manager = ConnectionManager::<SqliteConnection>::new(db_path);
+                let pool = Pool::builder()
+                    .connection_timeout(Duration::from_secs(30))
+                    .max_size(4)
+                    .min_idle(Some(1))
+                    .connection_customizer(Box::new(SqliteConnectionCustomizer))
+                    .build(manager)
+                    .expect("Failed to create Diesel connection pool");
+                Ok::<_, diesel::r2d2::PoolError>(pool)
+            })?;
+
+            let db = Database {
+                sqlx_pool,
+                diesel_pool,
+            };
+
+            app.manage(LibraryService::new(db.clone()));
+            app.manage(SongsService::new(db.clone()));
+            app.manage(AlbumsService::new(db.clone()));
+            app.manage(PlayerService::new(db.clone()));
 
             // Initialize config store
             let store = app.store("config.json")?;

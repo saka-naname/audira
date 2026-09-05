@@ -1,9 +1,11 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use sqlx::SqlitePool;
 
-use crate::repository::albums_repository::{
-    AlbumsRepository, AlbumsSortDirection, AlbumsSortKey, ListAlbumsParams,
+use crate::{
+    libs::db::Database,
+    repository::albums_repository::{
+        AlbumsRepository, AlbumsSortDirection, AlbumsSortKey, ListAlbumsParams,
+    },
 };
 
 const DEFAULT_PAGE_SIZE: i64 = 50;
@@ -75,14 +77,14 @@ pub enum ListAlbumsError {
 
 #[derive(Debug, Clone)]
 pub struct AlbumsService {
-    db_pool: SqlitePool,
+    db: Database,
     albums_repository: AlbumsRepository,
 }
 
 impl AlbumsService {
-    pub fn new(db_pool: SqlitePool) -> Self {
+    pub fn new(db: Database) -> Self {
         Self {
-            db_pool,
+            db,
             albums_repository: AlbumsRepository::new(),
         }
     }
@@ -100,7 +102,7 @@ impl AlbumsService {
         let rows = self
             .albums_repository
             .list_albums(
-                &self.db_pool,
+                &self.db.sqlx_pool,
                 &ListAlbumsParams {
                     offset,
                     page_size: page_size + 1,

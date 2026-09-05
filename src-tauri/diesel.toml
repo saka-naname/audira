@@ -1,0 +1,7 @@
+[print_schema]
+file = "src/schema.rs"
+filter = { only_tables = ["album_songs", "albums", "song_metadata", "songs", "thumbnails"] }
+sqlite_integer_primary_key_is_bigint = true
+
+[migrations_directory]
+dir = "diesel_migrations_transitive"
