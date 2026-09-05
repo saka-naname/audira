@@ -313,6 +313,7 @@ dependencies = [
  "blake3",
  "chrono",
  "diesel",
+ "dirs",
  "lofty",
  "r2d2",
  "rayon",

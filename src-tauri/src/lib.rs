@@ -1,5 +1,6 @@
 mod commands;
 mod constants;
+pub mod database_path;
 mod libs;
 mod models;
 mod repository;
@@ -97,7 +98,9 @@ pub fn run() {
             // Initialize database
             let db_dir = app.path().app_local_data_dir()?;
             std::fs::create_dir_all(&db_dir)?;
-            let db_path = db_dir.join("libdata.db").to_string_lossy().to_string();
+            let db_path = database_path::from_app_local_data_dir(db_dir)
+                .to_string_lossy()
+                .to_string();
 
             let opts = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
                 .create_if_missing(true)

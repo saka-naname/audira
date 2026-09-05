@@ -28,3 +28,6 @@ run = "cargo test --manifest-path src-tauri/Cargo.toml"
 
 [tasks.test]
 run = [{ tasks = ["test:*"] }]
+
+[tasks.database-path]
+run = "cargo run --quiet --manifest-path src-tauri/Cargo.toml --bin audira-db-path"
